@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contacto – Juangel</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans bg-gray-50 pt-16">
+  <!-- Navbar fija -->
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+    <div class="text-2xl font-bold text-blue-600">Juangel</div>
+    <div class="flex items-center space-x-6">
+      <ul class="flex space-x-6">
+        <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
+        <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+        <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+        <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
+      </ul>
+      <div class="relative">
+        <button id="userMenuBtn" class="focus:outline-none">
+          <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
+        </button>
+        <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+          <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
+          <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Sección: Introducción -->
+  <section id="contact-intro" class="mt-16 max-w-4xl mx-auto text-center px-4">
+    <h2 class="text-4xl font-bold text-gray-800 mb-4">Contáctanos</h2>
+    <p class="text-gray-600">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ponte en contacto con nosotros para atender tus consultas y solicitudes.
+    </p>
+  </section>
+
+  <!-- Sección: Formulario de contacto -->
+  <section id="contact-form" class="mt-12 mb-16 max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <form id="contactForm" class="space-y-6">
+      <div>
+        <label class="block text-gray-700">Nombre</label>
+        <input
+          type="text"
+          placeholder="Tu nombre"
+          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700">Correo electrónico</label>
+        <input
+          type="email"
+          placeholder="correo@ejemplo.com"
+          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700">Mensaje</label>
+        <textarea
+          placeholder="Escribe tu mensaje..."
+          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:outline-none h-32"
+        ></textarea>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+        Enviar
+      </button>
+    </form>
+  </section>
+
+  <!-- Sección: Otras formas de contacto -->
+  <section id="contact-others" class="mt-12 max-w-4xl mx-auto px-4 mb-16">
+    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Otras formas de contacto</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <a
+        href="https://wa.me/573166071162?text=Quisiera%20una%20cotizaci%C3%B3n"
+        target="_blank"
+        class="flex items-center justify-center bg-green-500 text-white py-4 rounded-lg hover:bg-green-600"
+      >
+        WhatsApp
+      </a>
+      <a
+         href="#"
+         class="flex items-center justify-center bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700">
+        Facebook
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer revisado -->
+  <footer class="bg-gray-800 text-gray-300 py-8">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Legal</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="hover:underline">Privacidad</a></li>
+          <li><a href="#" class="hover:underline">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Contacto</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-instagram.svg" alt="Instagram" class="w-4 h-4 mr-1"/>
+              Instagram
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-facebook.svg" alt="Facebook" class="w-4 h-4 mr-1"/>
+              Facebook
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-x.svg" alt="Twitter" class="w-4 h-4 mr-1"/>
+              Twitter
+            </a>
+          </li>
+          <li>
+            Tel: <a href="tel:+573166071162" class="hover:underline">+57 316 6071162</a>
+          </li>
+          <li>
+            Email:
+            <a href="mailto:contacto.fabricacionesjuangel@gmail.com" class="hover:underline">
+              contacto.fabricacionesjuangel@gmail.com
+            </a>
+          </li>
+          <li>
+            Dirección:
+            <a
+              href="https://www.google.com/maps/place/Cl.+58+%23+54-10,+La+Candelaria,+Medell%C3%ADn,+La+Candelaria,+Medell%C3%ADn,+Antioquia/@6.25776,-75.5722579,726m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8e4428fcbede2139:0xa4285e334bf17894!8m2!3d6.25776!4d-75.569683!16s%2Fg%2F11l_60vn1s?entry=ttu&g_ep=EgoyMDI1MDUxMy4xIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener"
+              class="hover:underline"
+            >
+              Calle 58 #54-10, Medellín
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Accesos Rápidos</h3>
+        <ul class="space-y-1">
+          <li><a href="index.html" class="hover:underline">Inicio</a></li>
+          <li><a href="tienda.html" class="hover:underline">Tienda Virtual</a></li>
+          <li><a href="quienes-somos.html" class="hover:underline">Quiénes Somos</a></li>
+          <li><a href="contacto.html" class="hover:underline">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="../model/userMenu.js" defer></script>
+  <script src="../model/contactForm.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión – Juangel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 font-sans pt-16">
+    <!-- Navbar fija -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+      <div class="text-2xl font-bold text-blue-600">Juangel</div>
+      <div class="flex items-center space-x-4">
+        <ul class="flex space-x-4">
+          <li><a href="./index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
+          <li><a href="./tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+          <li><a href="./quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+          <li><a href="./contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
+        </ul>
+        <div class="relative">
+          <button id="userMenuBtn" class="focus:outline-none">
+            <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
+          </button>
+          <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+            <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
+            <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- PÁGINA: Inicio de Sesión -->
+    <section class="max-w-md mx-auto mt-12 mb-16 bg-white p-8 rounded-lg shadow-lg">
+      <h2 class="text-3xl font-bold text-blue-600 mb-6">Iniciar Sesión</h2>
+      <form id="loginForm" novalidate class="space-y-4">
+        <label class="block">
+          <span class="text-sm font-medium text-gray-700">Correo electrónico</span>
+          <input
+            type="email"
+            placeholder="correo@ejemplo.com"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:outline-none"
+          />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium text-gray-700">Contraseña</span>
+          <input
+            type="password"
+            placeholder="••••••••"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:outline-none"
+          />
+        </label>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md"
+        >
+          Entrar
+        </button>
+        <p class="text-right text-sm text-gray-600">
+          ¿No tienes cuenta?
+          <a href="sigin.html" class="text-blue-600 hover:underline">Regístrate</a>
+        </p>
+      </form>
+    </section>
+
+    <!-- Footer revisado -->
+    <footer class="bg-gray-800 text-gray-300 py-8">
+      <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="font-semibold mb-2 text-white">Legal</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="hover:underline">Privacidad</a></li>
+            <li><a href="#" class="hover:underline">Términos y Condiciones</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2 text-white">Contacto</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="inline-flex items-center hover:underline">
+                <img src="../../media/icons/icons8-instagram.svg" alt="Instagram" class="w-4 h-4 mr-1"/>Instagram
+              </a>
+            </li>
+            <li><a href="#" class="inline-flex items-center hover:underline">
+                <img src="../../media/icons/icons8-facebook.svg" alt="Facebook" class="w-4 h-4 mr-1"/>Facebook
+              </a>
+            </li>
+            <li><a href="#" class="inline-flex items-center hover:underline">
+                <img src="../../media/icons/icons8-x.svg" alt="Twitter" class="w-4 h-4 mr-1"/>Twitter
+              </a>
+            </li>
+            <li>Tel: <a href="tel:+573166071162" class="hover:underline">+57 316 6071162</a></li>
+            <li>Email: <a href="mailto:contacto.fabricacionesjuangel@gmail.com" class="hover:underline">contacto.fabricacionesjuangel@gmail.com</a></li>
+            <li>Dirección: <a href="https://www.google.com/maps/place/Cl.+58+%23+54-10,+La+Candelaria,+Medell%C3%ADn" target="_blank" rel="noopener" class="hover:underline">Calle 58 #54-10, Medellín</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2 text-white">Accesos Rápidos</h3>
+          <ul class="space-y-1">
+            <li><a href="index.html" class="hover:underline">Inicio</a></li>
+            <li><a href="tienda.html" class="hover:underline">Tienda Virtual</a></li>
+            <li><a href="quienes-somos.html" class="hover:underline">Quiénes Somos</a></li>
+            <li><a href="contacto.html" class="hover:underline">Contacto</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <!-- cargar validación login -->
+    <script src="../model/login.js" defer></script>
+    <!-- cargar script de menú de usuario -->
+    <script src="../model/userMenu.js" defer></script>
+  </body>
+</html>

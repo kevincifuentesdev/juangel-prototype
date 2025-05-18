@@ -1,0 +1,846 @@
+Código,Epíca,Historia de Usuario,Criterio de Aceptación 1,Criterio de Aceptación 2,Criterio de Aceptación 3,Criterio de Aceptación 4,Criterio de Aceptación 5,Criterio de Aceptación 6,Criterio de Aceptación 7,Criterio de Aceptación 8,Criterio de Aceptación 9,Criterio de Aceptación 10,Criterio de Aceptación 11,Sprint,Estado
+HU1,Cuenta y seguridad,"Como visitante quiero registrarme proporcionando nombre, correo, edad y contraseña para crear mi cuenta y agilizar futuros pedidos.","Dado que el usuario está en la página principal (GET /) y ve el enlace <NavLink to=""/registro"">Registrarse</NavLink>
+Cuando hace clic en ese enlace (onClick en <NavLink>)
+Entonces el cliente emite GET /registro, muestra el spinner <Loader /> y renderiza el formulario <form id=""registrationForm""> con campos name, email, birthDate, password y botón “Registrar”.","Dado que el formulario #registrationForm está cargado y visible
+Cuando el usuario deja en blanco cualquiera de los campos name, email, birthDate o password y hace clic en “Registrar”
+Entonces el cliente detiene el envío, aplica validación inline y muestra <span class=""error"">Campo requerido</span> junto a cada campo vacío.","Dado que el campo #email existe en el formulario y el usuario ingresa un valor que no coincide con la expresión regular de email
+Cuando ocurre el evento onBlur o intenta enviar el formulario
+Entonces el cliente muestra <span class=""error"">Formato de correo inválido</span> y bloquea la petición al servidor.","Dado que el campo #birthDate permite seleccionar fecha y el usuario ingresa una fecha que indica < 18 años
+Cuando el formulario valida la edad en el evento onSubmit
+Entonces se muestra <span class=""error"">Debes ser mayor de 18 años</span> y no se invoca la API.","Dado que el campo #password está configurado con requisitos mínimos (8 caracteres, al menos una letra mayúscula y un número)
+Cuando el usuario ingresa una contraseña que no cumple estos requisitos y hace submit
+Entonces el cliente muestra <span class=""error"">La contraseña debe tener ≥ 8 caracteres, 1 mayúscula y 1 número</span> y bloquea el envío.","Dado que el usuario ha completado todos los campos con datos válidos
+Cuando hace clic en “Registrar” (POST /api/users con payload { name, email, birthDate, password })
+Entonces la API responde HTTP 201, el cliente muestra toast “Cuenta creada con éxito”, guarda el JWT retornado en localStorage y redirige a /mi-cuenta.","Dado que el usuario ingresa un email ya existente en la base de datos
+Cuando el cliente envía POST /api/users con ese email
+Entonces la API devuelve HTTP 409 y la interfaz muestra <span class=""error"">El correo ya está en uso</span> junto al campo #email.","Dado que ocurre un error interno en el servidor (500) al procesar el registro
+Cuando la petición POST /api/users retorna HTTP 500
+Entonces la UI muestra un banner rojo “Error del servidor. Inténtalo más tarde.” y registra el error en consola (logger.error).","Dado que el usuario hace clic en “Registrar” y la petición supera el timeout configurado (p. ej. 10 s) o falla la conexión
+Cuando el cliente captura un timeout o fetch lanza excepción de red
+Entonces muestra “No se pudo conectar. Verifica tu red e inténtalo de nuevo.” y habilita el botón “Registrar” para reintentar.",,,1,Do 
+HU2,Cuenta y seguridad,Como usuario registrado quiero iniciar sesión con mi correo y contraseña para acceder a mi cuenta y consultar mi historial de pedidos.,"Dado que he navegado a GET /login y la aplicación ha retornado HTTP 200
+Cuando la UI renderiza <form id=""loginForm""> con campos email, password y el botón “Iniciar sesión”
+Entonces el formulario aparece con los campos vacíos y el botón habilitado","Dado que el formulario #loginForm está disponible
+Cuando el usuario hace clic en “Iniciar sesión” sin completar email o password
+Entonces el cliente bloquea el envío y muestra mensajes inline “Campo requerido” junto a cada campo vacío","Dado que el campo #email existe en el formulario
+Cuando el usuario ingresa un valor que no coincide con la expresión regular de email y mueve el foco fuera del campo (onBlur)
+Entonces el cliente muestra inline “Formato de correo inválido” y deshabilita el botón “Iniciar sesión”","Dado que ambos campos (email, password) contienen valores válidos
+Cuando el usuario clica “Iniciar sesión” y el cliente envía POST /api/auth/login con { email, password }
+Entonces se muestra un spinner en el botón y la petición se emite al servidor","Dado que la API responde HTTP 200 con payload { token: JWT, user: { id, name, email } }
+Cuando el cliente recibe la respuesta
+Entonces almacena el JWT en localStorage, redirige automáticamente a /mi-cuenta y muestra un toast “Bienvenido {user.name}”","Dado que la API responde HTTP 401 con { error: ""InvalidCredentials"" }
+Cuando el cliente procesa la respuesta
+Entonces muestra el mensaje “Correo o contraseña incorrectos” bajo el formulario y mantiene el formulario habilitado","Dado que la API responde HTTP 500 o superior
+Cuando el cliente detecta el código de error
+Entonces muestra un banner rojo “Error del servidor. Inténtalo más tarde.” y registra el error en logger.error","Dado que la petición supera el timeout configurado (p. ej. 10 s) o hay fallo de red
+Cuando fetch lanza una excepción de red o timeout
+Entonces muestra “No se pudo conectar. Verifica tu conexión e inténtalo de nuevo.” y habilita nuevamente el botón “Iniciar sesión”",,,,1,Do 
+HU3,Cuenta y seguridad,Como visitante registrándome quiero que el sistema valide que tengo ≥ 18 años para garantizar el cumplimiento de la normativa legal.,"Dado que el formulario de registro (#registrationForm) está cargado en GET /registro
+Cuando el usuario ingresa una fecha de nacimiento que resulte en edad ≥ 18 años y pierde el foco del campo (onBlur en #birthDate)
+Entonces el cliente no muestra ningún mensaje de error inline y mantiene habilitado el botón “Registrar”","Dado que el formulario de registro está visible y el usuario introduce una fecha que indica edad < 18 años
+Cuando el usuario pierde el foco de #birthDate
+Entonces el cliente muestra inline el mensaje “Debes ser mayor de 18 años” junto al campo y deshabilita el botón “Registrar”","Dado que el usuario pulsa “Registrar” con birthDate que indica < 18 años y otros campos válidos
+Cuando ocurre el evento submit en #registrationForm
+Entonces el cliente bloquea la petición al servidor y mantiene visible el mensaje “Debes ser mayor de 18 años”","Dado que el cliente envía POST /api/users con un payload JSON donde birthDate indica < 18 años
+Cuando el servidor procesa la solicitud
+Entonces la API responde HTTP 400 con { error: ""Underage"" } y la UI muestra “No cumples con la edad mínima requerida” en la parte superior del formulario.",,,,,,,,1,Do 
+HU4,Comunicación y soporte,"Como cliente quiero contactar a la empresa mediante formulario, WhatsApp y chatbot para elegir el canal que prefiera y resolver mis dudas.","Dado que el usuario ha cargado la página principal (GET /) y ve el elemento <NavLink to=""/contacto"">Contacto</NavLink>
+
+Cuando hace clic en ese enlace (onClick en el componente <NavLink>)   
+
+Entonces el cliente emite GET /api/contact-info, muestra <Loader /> y cambia la URL a /contacto, desplegando el formulario, el botón WhatsApp y el control de Chatbot oculto.","Dado que el formulario #contactForm en /contacto está renderizado con campos name, email, message           
+
+Cuando completo name: ""Juan"", email: ""juan@ejemplo.com"", message: ""Consulta..."" y clico “Enviar” (POST /api/contact)   
+
+Entonces la API responde HTTP 200 y la UI muestra un toast “¡Mensaje enviado con éxito!” y limpia los campos del formulario.","Dado que el formulario #contactForm está visible en /contacto      
+
+Cuando clico “Enviar” sin rellenar email o message            Entonces el cliente detiene el submit, muestra errores inline junto a cada campo vacío (<span class=""error"">Campo requerido</span>) y no invoca la API.","Dado que el usuario completa campos válidos y envía el formulario           
+
+Cuando la petición POST /api/contact retorna HTTP 500
+
+Entonces la UI muestra un banner rojo “Error al enviar. Inténtalo más tarde.” y registra el error en logger.error.","Dado que /contacto renderiza <a id=""whatsappLink"" href=""whatsapp://send?phone=+57..."">WhatsApp</a>           Cuando clico el elemento #whatsappLink   
+
+Entonces el dispositivo intenta abrir la aplicación WhatsApp con chat preconfigurado al número de Juangel Maniquíes.","Dado que el enlace whatsapp://... no abre la app (error de esquema URI)    Cuando el cliente detecta el fallo de protocolo (evento onError)           
+
+Entonces redirige al usuario a la versión web de WhatsApp WhatsApp Web ... en una nueva pestaña.","Dado que en /contacto el componente <Chatbot /> está montado con visible = false            Cuando hago clic en el botón “Chatbot” (onClick en <button id=""openChatbot"">)  
+
+Entonces el componente cambia a visible = true, renderiza el input de usuario y mantiene la misma ruta sin recarga.","Dado que <Chatbot /> está visible y conectado al endpoint WebSocket wss://.../chat            Cuando ingreso “¿Cuáles son sus horarios?” y presiono Enter
+
+Entonces el cliente envía { message } vía WebSocket, espera respuesta, y muestra el reply en < 2 s dentro del chat.","Dado que <Chatbot /> está visible y el servidor de chat retorna un error o cierra la conexión
+
+Cuando el cliente detecta socket.onerror o socket.onclose
+
+Entonces la UI muestra “Error de chat. Inténtalo de nuevo.” dentro del área de chat y registra el fallo en consola.",,,5,Do 
+HU5,Gestión de pedidos,Como cliente quiero ver mis pedidos actuales y pasados desde mi cuenta para hacer seguimiento de mis compras.,"Dado que he iniciado sesión con un JWT válido y navego a GET /mis-pedidos
+Cuando la UI dispara GET /api/orders?userId={miId}
+Entonces la API responde HTTP 200 con un array de pedidos y el cliente renderiza una tabla con columnas orderId, date, status y total.","Dado que la respuesta de GET /api/orders?userId={miId} es un array vacío ([])
+Cuando la función renderOrders([]) se ejecuta
+Entonces la UI muestra el texto “Aún no has realizado compras.” en lugar de la tabla.}","Dado que la tabla de pedidos está renderizada y contiene la fila para orderId=123
+Cuando hago clic en la fila o en el botón “Ver detalle” (onClick en <button data-order=""123"">)
+Entonces el cliente emite GET /api/orders/123, cambia la URL a /pedido/123 y renderiza la vista de detalles con información completa.","Dado que la petición GET /api/orders?userId={miId} retorna HTTP 500
+Cuando el cliente captura la respuesta de error
+Entonces la UI muestra un banner rojo “Error al cargar tus pedidos. Inténtalo de nuevo más tarde.” y registra el error en logger.error.","Dado que la petición a /api/orders?userId={miId} excede el tiempo de espera (p. ej. 10 s) o lanza excepción de red
+Cuando ocurre el timeout o la excepción
+Entonces la UI muestra “No se pudo conectar. Verifica tu conexión e inténtalo de nuevo.” y habilita el botón “Reintentar”.",,,,,,,1,Do 
+HU6,Facturación y pagos ,Como cliente quiero descargar mis facturas electrónicas desde mi cuenta para conservar registros para mi contabilidad.,"Dado que he iniciado sesión correctamente con un JWT válido y navego a /mi-cuenta/facturas
+Cuando la UI realiza una solicitud GET /api/invoices?userId={id}
+Entonces el backend responde con HTTP 200 y una lista de facturas asociadas al usuario, que se renderizan con fecha, número, monto total y un botón “Descargar PDF” por cada una","Dado que estoy en la sección “Mis facturas” y se ha cargado correctamente la lista de facturas
+Cuando hago clic en el botón “Descargar PDF” de la factura con invoiceId=456
+Entonces la UI realiza una solicitud GET /api/invoices/456/download
+Y si la factura existe y pertenece al usuario, el backend responde con HTTP 200 y un archivo PDF descargable con nombre factura-456.pdf","Dado que he accedido a /mi-cuenta/facturas con sesión activa
+Cuando el backend responde a GET /api/invoices?userId={id} con un array vacío
+Entonces la UI muestra el mensaje “No se encontraron facturas registradas” en lugar de la tabla","Dado que el usuario intenta descargar una factura con invoiceId=789
+Cuando el backend detecta que la factura no pertenece al userId autenticado
+Entonces responde con HTTP 403 Forbidden y la UI muestra un toast “No tienes permiso para acceder a esta factura”","Dado que intento descargar una factura desde el botón “Descargar PDF”
+Cuando el backend recibe GET /api/invoices/999/download y no encuentra la factura
+Entonces responde con HTTP 404 Not Found y la UI muestra el mensaje “Factura no encontrada o eliminada”","Dado que intento descargar una factura válida
+Cuando el backend encuentra un error interno al generar o servir el archivo
+Entonces responde con HTTP 500 y la UI muestra un mensaje de error “No se pudo completar la descarga. Intenta más tarde”","Dado que un usuario descarga exitosamente una factura
+Cuando la API responde con HTTP 200 al endpoint /invoices/{id}/download
+Entonces se registra en la base de datos una entrada en la tabla invoice_downloads con { userId, invoiceId, timestamp }",,,,,2,Do 
+HU7,Cuenta y seguridad,Como usuario autenticado quiero editar o eliminar mi información personal y mi cuenta para mantener mis datos actualizados o borrarlos si lo deseo.,"Dado que he iniciado sesión con un JWT válido y navego a GET /mi-cuenta
+Cuando la UI realiza GET /api/users/{id}
+Entonces recibo HTTP 200 y el cliente renderiza el formulario #profileForm con campos name, email, birthDate deshabilitados y el botón “Editar perfil” habilitado","Dado que el formulario está en modo lectura y veo el botón “Editar perfil”
+Cuando hago clic en “Editar perfil” (onClick en <button id=""editProfile"">)
+Entonces el componente activa los campos name, email, birthDate, muestra los botones “Guardar cambios” y “Cancelar” y asigna formMode = ""edit""","Dado que estoy en modo edición y he modificado el campo email
+Cuando pierdo el foco de #email (onBlur)
+Entonces si el valor no coincide con la regex de email, el cliente muestra inline “Formato de correo inválido” y deshabilita “Guardar cambios”","Dado que estoy en modo edición y he modificado al menos uno de los campos (name, email, birthDate) con datos válidos
+Cuando hago clic en “Guardar cambios” (PATCH /api/users/{id} con payload JSON)
+Entonces la API responde HTTP 200, el cliente muestra toast “Perfil actualizado con éxito”, actualiza los campos en pantalla y vuelve a modo lectura","Dado que envío un PATCH /api/users/{id} con un email que ya existe en la DB
+Cuando la API retorna HTTP 409
+Entonces la UI muestra inline “El correo ya está en uso” junto a #email y permanece en modo edición","Dado que envío un PATCH /api/users/{id} y el servidor responde HTTP 500
+Cuando el cliente procesa la respuesta de error
+Entonces muestra banner rojo “Error al actualizar perfil. Inténtalo más tarde.” y registra el incidente en logger.error","Dado que estoy en modo edición y he cambiado algún valor
+Cuando hago clic en “Cancelar” (onClick en <button id=""cancelEdit"">)
+Entonces la UI revierte los campos a los valores originales obtenidos al cargar la página y vuelve a modo lectura","Dado que el formulario está en modo lectura y veo el botón “Eliminar cuenta”
+Cuando hago clic en “Eliminar cuenta” (onClick en <button id=""deleteAccount"">)
+Entonces aparece un modal de confirmación con mensaje “¿Estás seguro? Esta acción es irreversible.” y botones “Confirmar” y “Cancelar”","Dado que el modal de confirmación está visible
+Cuando hago clic en “Cancelar” dentro del modal
+Entonces el modal se cierra y mantengo mi sesión activa en /mi-cuenta sin cambios","Dado que el modal de confirmación está visible
+Cuando hago clic en “Confirmar” (DELETE /api/users/{id})
+Entonces la API responde HTTP 204, el cliente invalida el JWT, redirige a / y muestra el mensaje “Cuenta eliminada correctamente”","Dado que envío DELETE /api/users/{id} y el servidor retorna HTTP 500
+Cuando el cliente recibe la respuesta de error
+Entonces cierra el modal, muestra banner rojo “Error al eliminar cuenta. Inténtalo más tarde.” y registra el error en logger.error",2,Do 
+HU8,Seguridad y privacidad,Como usuario quiero que mis contraseñas se almacenen con bcrypt (coste ≥ 12 rondas) para garantizar la seguridad de mis credenciales.,"Dado que un usuario envía una petición POST /api/users con { password }
+Cuando el servidor recibe la solicitud
+Entonces antes de persistir, ejecuta bcrypt.hash(password, 12) y almacena únicamente el hash resultante en la base de datos","Dado que un usuario autenticado emite PATCH /api/users/{id}/password con { newPassword }
+Cuando el backend procesa la solicitud
+Entonces usa bcrypt.hash(newPassword, 12) y reemplaza el hash antiguo por el nuevo en el campo passwordHash","Dado que un usuario intenta autenticarse con POST /api/auth/login y envía { email, password }
+Cuando el backend recupera el passwordHash de la base de datos
+Entonces ejecuta bcrypt.compare(password, passwordHash) y solo emite JWT si el resultado es true","Dado que cualquier operación de usuario incluye un campo password
+Cuando el servidor procesa la petición
+Entonces no guarda nunca password en ningún campo de la base de datos, ni en logs de servidor o registros de auditoría","Dado que la función bcrypt.hash() arroja una excepción (e.g. error de memoria)
+Cuando el error ocurre durante el registro o cambio de contraseña
+Entonces el backend responde HTTP 500 con { error: ""HashingError"" }, no persiste datos y registra el incidente en security_incidents","Dado que se genera un hash bcrypt para una contraseña
+Cuando el hash es almacenado
+Entonces el sistema verifica que el prefijo del hash contiene $2b$12$, asegurando un coste de 12 rondas","Dado que el sistema actualiza la política de seguridad a un coste > 12 (por ejemplo, 14)
+Cuando un usuario inicia sesión correctamente (bcrypt.compare retorna true)
+Entonces el backend re-hash la contraseña con bcrypt.hash(password, newCost) y actualiza passwordHash con el nuevo coste automáticamente",,,,,1,Do 
+HU9,Reportes y dashboard,"Como administrador quiero generar reportes financieros mensuales automáticos sobre ventas, ingresos y facturación para facilitar el análisis financiero.","Dado que el sistema ha alcanzado el primer día del mes a las 00:00
+Cuando el cronjob generateMonthlyFinancialReport() se ejecuta
+Entonces el backend compila los datos de ventas, ingresos y facturación del mes anterior y genera un archivo .pdf y .xlsx con nombre reporte_financiero_MM-YYYY","Dado que el reporte fue generado exitosamente
+Cuando se completan las operaciones de escritura
+Entonces el sistema guarda los archivos generados en la carpeta protegida /storage/reports/{adminId}/ y actualiza la tabla monthly_reports con { filePath, generatedAt, reportType, month, year }","Dado que el reporte mensual fue generado y guardado correctamente
+Cuando el sistema completa el proceso de escritura en disco
+Entonces envía un correo a admin@example.com con asunto “Reporte financiero de MM/YYYY disponible” y enlaces de descarga","Dado que he iniciado sesión como administrador y navego a la sección GET /admin/reportes
+Cuando selecciono un mes y hago clic en “Descargar”
+Entonces el sistema sirve el archivo PDF o Excel correspondiente con encabezados HTTP correctos (Content-Disposition: attachment) y contenido íntegro","Dado que he accedido a la sección de reportes y selecciono un mes sin datos
+Cuando intento descargar el archivo
+Entonces el sistema responde con HTTP 404 y un mensaje: “No hay reporte disponible para este período”","Dado que el proceso automático de generación falla (por error de base de datos, disco o timeout)
+Cuando se captura el error
+Entonces el sistema registra el error en report_generation_errors y reintenta la tarea hasta 2 veces con 10 minutos de espera entre intentos","Dado que el reporte no pudo generarse tras los reintentos
+Cuando se inserta un registro en report_generation_errors
+Entonces el sistema envía un correo a admin@example.com con asunto “Error al generar reporte financiero MM/YYYY” e incluye detalles técnicos del fallo",,,,,2,Do 
+HU10,Gestión de pedidos,Como cliente quiero agregar o quitar productos de un carrito y luego generar un pedido consolidado para gestionar mis compras de forma cómoda.,"Dado que he iniciado sesión con un JWT válido y navego a GET /carrito
+Cuando la UI lanza GET /api/cart
+Entonces recibo HTTP 200 con un array [{ productId, name, quantity, unitPrice }] y el cliente renderiza cada ítem en la lista de carrito, mostrando name, quantity, unitPrice y totalPrice.","Dado que estoy en la página de producto /productos/456 y veo el botón “Añadir al carrito”
+Cuando hago clic en “Añadir al carrito” (onClick dispara POST /api/cart con { productId:456, quantity:1 })
+Entonces la API responde HTTP 200 con el carrito actualizado y el cliente incrementa el contador de ítems del carrito en el header.","Dado que el carrito contiene el ítem con productId=456
+Cuando hago clic en el icono eliminar de ese ítem (onClick dispara DELETE /api/cart/456)
+Entonces la API retorna HTTP 204, y el cliente elimina la fila del ítem del DOM y actualiza el total del carrito.","Dado que el carrito tiene al menos un ítem y hago clic en “Confirmar compra” en /carrito
+Cuando el cliente envía POST /api/orders con payload { cartItems:[{productId,quantity}], userId }
+Entonces la API devuelve HTTP 201 con { orderId }, el cliente redirige a /pedido/{orderId} y muestra “Pedido {orderId} generado con éxito”.","Dado que intento añadir al carrito un producto con productId=789 cuya stock=0
+Cuando realizo POST /api/cart con { productId:789, quantity:1 }
+Entonces la API retorna HTTP 409 con { error:""OutOfStock"" } y el cliente muestra inline “Producto sin stock disponible”.","Dado que el usuario clicó “Añadir” o “Eliminar” y la petición alcanza el servidor
+Cuando la API responde HTTP 500
+Entonces la UI muestra banner rojo “Error al actualizar el carrito. Inténtalo más tarde.” y registra logger.error.","Dado que envío POST /api/orders con datos válidos del carrito
+Cuando la API retorna HTTP 500
+Entonces la UI muestra “Error al generar el pedido. Inténtalo de nuevo.” y mantiene visible el botón “Confirmar compra”.","Dado que ejecuto cualquiera de las acciones anteriores (GET/POST/DELETE) y excede el timeout configurado (>10 s) o falla la conexión
+Cuando el cliente captura la excepción de red
+Entonces muestra “No se pudo conectar. Verifica tu red e inténtalo de nuevo.” y re-habilita el botón correspondiente para reintentar.",,,,1,Do 
+HU11,Compatibilidad & Portabilidad,Como usuario quiero poder seleccionar mi idioma (español/inglés) desde cualquier página para usar la interfaz en mi lengua nativa.,"Dado que cualquier página web ha cargado completamente (DOMContentLoaded)
+Cuando el componente <LanguageSelector> se monta en la cabecera
+Entonces se muestra un control desplegable con las opciones “Español” y “English”","Dado que el selector de idioma está visible y muestra la opción actual “Español”
+Cuando el usuario selecciona “English” (evento onChange)
+Entonces el cliente fija la cookie lang=en, recarga las cadenas de texto en inglés en toda la UI sin recargar la ruta, y guarda la preferencia en localStorage","Dado que el selector muestra actualmente “English”
+Cuando el usuario selecciona “Español”
+Entonces el cliente fija la cookie lang=es, vuelve a cargar todas las cadenas en español sin recargar la ruta, y actualiza localStorage","Dado que la cookie lang existe con valor “es” o “en”
+Cuando el usuario recarga la página o navega a otra ruta interna
+Entonces el cliente lee la cookie y configura la UI en el idioma correspondiente antes de renderizar contenidos","Dado que no existe cookie lang ni localStorage.lang
+Cuando el usuario accede al sitio por primera vez
+Entonces el cliente detecta navigator.language, si comienza con “es” se usa español, de lo contrario se usa inglés, y guarda esa preferencia en cookie y localStorage","Dado que una clave de texto no tiene traducción en el archivo de idioma seleccionado
+Cuando el sistema intenta renderizar esa clave
+Entonces muestra el texto en el idioma base (español), registra logger.warn(""Missing translation"", key, lang) y no rompe la UI","Dado que el navegador del usuario bloquea cookies de terceros o propias
+Cuando el cliente intenta fijar la cookie lang
+Entonces detecta el fallo, almacena la preferencia en localStorage y muestra un aviso discreto “Preferencia de idioma guardada temporalmente”","Dado que se abre un PR con cambios en los archivos de idioma (.json o .po)
+Cuando la pipeline de CI ejecuta npm run verify-translations
+Entonces falla si faltan claves en alguno de los idiomas o si la interpolación de variables no coincide",,,,6,Do 
+HU12,Mantenibilidad y Observabilidad,"Como desarrollador y mantenedor quiero documentación de instalación, configuración y operación en Markdown para facilitar el onboarding y la operación.","Dado que el repositorio está clonado en local
+Cuando inspecciono la raíz del proyecto
+Entonces encuentro el archivo manual.md con permisos de lectura","Dado que manual.md existe
+Cuando abro el archivo y busco encabezados
+Entonces contiene al menos un encabezado de nivel 1 para cada sección:
+
+# Instalación
+
+# Configuración
+
+# Operación","Dado que la sección # Instalación está presente
+Cuando reviso el texto bajo ese encabezado
+Entonces incluye pasos claros para:
+
+Clonar el repositorio (git clone …)
+
+Instalar dependencias (npm install o pip install -r requirements.txt)","Dado que la sección # Configuración está presente
+Cuando reviso el texto bajo ese encabezado
+Entonces se describen:
+
+Variables de entorno obligatorias
+
+Ejemplo de archivo .env.example
+
+Parámetros de configuración de la base de datos y servicios externos","Dado que la sección # Operación está presente
+Cuando reviso el texto bajo ese encabezado
+Entonces se documentan:
+
+Comandos para iniciar la aplicación (npm start, docker-compose up)
+
+Procedimientos de monitoreo de logs
+
+Pasos para mantenimiento rutinario y backups
+
+ ","Dado que manual.md incluye enlaces internos o externos
+Cuando pruebo cada enlace (o ejecuto markdownlint --validate-links)
+Entonces ninguno retorna 404 y no hay referencias rotas","Dado que ejecuto markdownlint manual.md en la raíz del proyecto
+Cuando el linter analiza el archivo
+Entonces no reporta advertencias ni errores según la configuración de .markdownlint.json","Dado que se abre un PR sin manual.md o con secciones incompletas
+Cuando la pipeline de CI ejecuta el script scripts/check_manual.sh
+Entonces el job falla con mensaje “manual.md inválido o secciones faltantes”","Dado que se modifica la infraestructura (por ejemplo, nuevos servicios o comandos)
+Cuando el desarrollador actualiza manual.md
+Entonces añade una entrada en CHANGELOG.md bajo “Documentación” indicando la sección y fecha de la modificación","Dado que el proyecto usa MkDocs o Jekyll para generar docs
+Cuando ejecuto mkdocs build o jekyll build
+Entonces no hay errores de compilación y el directorio site/ o _site/ contiene el HTML derivado de manual.md",,1,Do 
+HU13,Usabilidad y Accesibilidad,Como usuario novato quiero completar una compra en menos de 3 min con ayuda mínima para disfrutar de una experiencia sencilla e intuitiva.,"Dado que el usuario novato inicia un test automatizado en entorno QA con cronómetro en timestamp_start
+Cuando completa todos los pasos del flujo de compra (selección, carrito, registro/login, pago, confirmación)
+Entonces el script mide duration = timestamp_end – timestamp_start y verifica que duration < 180 000 ms","Dado que el usuario accede a /catalogo, con el test simulando ancho de banda estándar
+Cuando el navegador dispara DOMContentLoaded y el usuario introduce un término de búsqueda en el campo #search
+Entonces la lista de productos filtrados aparece en < 3 s y el usuario puede clicar en el producto deseado sin ayuda externa","Dado que el usuario está viendo la página de detalle de producto /productos/{id}
+Cuando hace clic en “Añadir al carrito” (onClick dispara POST /api/cart)
+Entonces recibe HTTP 200, ve el badge de carrito actualizado y puede continuar al checkout de inmediato","Dado que el carrito contiene al menos un ítem y el usuario pulsa “Ir a pagar” en /carrito
+Cuando la UI redirige a /checkout y renderiza el formulario de pago
+Entonces el usuario visualiza todos los campos requeridos (dirección, método de pago) en un solo paso sin navegar por múltiples pantallas","Dado que el usuario novato no está autenticado y opta por registrarse durante el checkout
+Cuando rellena name, email, password y clica “Crear cuenta y pagar” (POST /api/auth/register-and-pay)
+Entonces recibe HTTP 201, se autentica automáticamente con JWT, y avanza al pago sin pasos adicionales","Dado que el usuario está autenticado y ve el resumen del pedido y opciones de pago en /checkout
+Cuando introduce datos de la tarjeta o elige pasarela y pulsa “Confirmar pago” (POST /api/payments)
+Entonces el backend procesa el pago, retorna HTTP 200 y el usuario ve “Pago exitoso” en la misma ruta","Dado que el pago fue exitoso
+Cuando el frontend recibe la respuesta
+Entonces redirige automáticamente a /pedido/{orderId}, muestra un mensaje “Pedido {orderId} generado con éxito” y el test registra timestamp_end","Dado que ocurre un fallo de servidor o red en alguno de los endpoints (/api/cart, /api/auth, /api/payments)
+Cuando la petición retorna HTTP ≥ 500 o lanza excepción de red
+Entonces la UI muestra un mensaje genérico “Error al procesar tu acción. Intenta nuevamente.”, ofrece un botón “Reintentar” y no interrumpe el cronómetro del test","Dado que el usuario novato parece inactivo por > 30 s en cualquier paso
+Cuando detecta inactividad en el frontend (idleTimer)
+Entonces automáticamente muestra un tooltip contextual con guía breve (“Para pagar, completa el formulario y haz clic en Confirmar pago”) sin requerir intervención humana","Dado que el flujo de compra finaliza (éxito o fallo)
+Cuando el frontend captura los timestamps y eventos de ayuda mostrados
+Entonces envía a performance_logs un objeto { userType:""novato"", duration, helpTooltipsDisplayed, errorsEncountered } para análisis continuo",,1,Do 
+HU14,Comunicación y soporte,Como usuario en la sección de ayuda quiero acceder al chatbot desde allí para resolver dudas sin tener que navegar fuera de la página de soporte.,"Dado que he navegado a GET /ayuda y la ruta ha respondido HTTP 200
+Cuando la UI renderiza el componente <HelpPage />
+Entonces el botón “Chatbot” (<button id=""openChatbot"">) aparece dentro del layout de ayuda sin mostrar ningún widget de chat activo","Dado que estoy en /ayuda y <Chatbot /> está montado con visible = false
+Cuando hago clic en el botón “Chatbot” (onClick en <button id=""openChatbot"">)
+Entonces el componente <Chatbot /> cambia a visible = true, carga su CSS/JS dinámicamente, y no cambia la URL ni recarga la página","Dado que <Chatbot /> acaba de cambiar a visible = true
+Cuando el componente invoca new WebSocket(""wss://api.juangel.com/chat"")
+Entonces recibe el evento onopen en < 2 s y muestra el mensaje del sistema “¿En qué puedo ayudarte?”","Dado que <Chatbot /> está visible y con estado connected
+Cuando ingreso “¿Cómo funciona el soporte?” en el campo de entrada y presiono Enter (onSubmit)
+Entonces el cliente envía { message: ""¿Cómo funciona el soporte?"" }, recibe { answer } en < 2 s y lo muestra en burbuja de respuesta","Dado que <Chatbot /> está visible y se han intercambiado mensajes
+Cuando hago clic en cualquier enlace interno de /ayuda
+Entonces <Chatbot /> permanece montado, sin reiniciar la conexión ni perder el historial","Dado que <Chatbot /> está visible en /ayuda
+Cuando hago clic en el icono “Cerrar” (onClick en <button id=""closeChatbot"">)
+Entonces <Chatbot /> cambia a visible = false, cierra la conexión WebSocket (socket.close()), y se oculta el UI del chat sin recargar la ruta","Dado que el usuario hace clic en “Chatbot” y se intenta cargar el bundle JS/CSS de <Chatbot />
+Cuando la solicitud de los recursos falla (HTTP 404/500) o tiempo de carga excede 10 s
+Entonces la UI muestra “Chatbot no disponible en este momento.” y deshabilita el botón “Chatbot”","Dado que <Chatbot /> está visible y ha invocado new WebSocket()
+Cuando el socket emite onerror o onclose antes de onopen
+Entonces la UI muestra “Error de conexión de chat. Por favor, inténtalo de nuevo más tarde.” y realiza hasta 3 reintentos automáticos con backoff exponencial","Dado que envío un mensaje y el socket está en estado readyState !== 1 (OPEN)
+Cuando el cliente detecta que no pudo enviar el payload
+Entonces muestra “No se pudo enviar el mensaje. Revisar conexión.” sin perder el texto del usuario",,,5,Do 
+HU15,Administración y  backoffice,"Como administrador quiero crear, editar y eliminar registros de proveedores con datos de contacto para mantener actualizada la base de proveedores.","Dado que un administrador autenticado accede a /admin/proveedores
+Cuando hace clic en “Agregar proveedor”
+Entonces el sistema renderiza un formulario con campos: nombreEmpresa, contactoNombre, telefono, email, direccion, y botón “Guardar”","Dado que el administrador llena todos los campos requeridos del formulario
+Cuando pulsa “Guardar” y la UI envía POST /api/proveedores con JSON válido
+Entonces la API responde HTTP 201 y el nuevo proveedor aparece en la tabla con notificación “Proveedor creado correctamente”","Dado que el administrador deja vacío un campo requerido como nombreEmpresa o email
+Cuando pulsa “Guardar”
+Entonces el sistema no envía la solicitud y muestra mensaje de error “Campo requerido”","Dado que el administrador hace clic en “Editar” sobre un proveedor
+Cuando se monta el modal o formulario
+Entonces se precargan los datos actuales del proveedor en los campos para modificación","Dado que el formulario ha sido modificado
+Cuando el administrador pulsa “Guardar cambios” y se envía PATCH /api/proveedores/{id}
+Entonces la API responde HTTP 200 y la UI muestra “Proveedor actualizado correctamente” con los nuevos datos reflejados","Dado que el administrador ha modificado el formulario
+Cuando pulsa “Cancelar”
+Entonces el sistema cierra el formulario sin aplicar cambios","Dado que el administrador pulsa “Eliminar” en un proveedor
+Cuando aparece el modal de confirmación y se confirma
+Entonces se envía DELETE /api/proveedores/{id} y la API responde HTTP 204, tras lo cual se elimina el proveedor de la lista y se muestra “Proveedor eliminado correctamente”","Dado que la API devuelve un error (por ejemplo, conflicto de email duplicado o error 500)
+Cuando se intenta crear un proveedor
+Entonces la UI muestra un mensaje: “No se pudo crear el proveedor. Intenta nuevamente” y se registra el error en admin_errors con { adminId, timestamp, tipoOperacion: ""create"", error }","Dado que se intenta actualizar un proveedor y ocurre un fallo (p. ej., proveedor inexistente o error de red)
+Cuando la API responde con error
+Entonces se muestra “Error al actualizar el proveedor” y el error se registra en backend","Dado que el administrador intenta eliminar un proveedor
+Cuando el backend devuelve un error (por ejemplo, proveedor asociado a pedidos activos)
+Entonces la UI muestra “No se puede eliminar el proveedor. Está asociado a pedidos” y la operación no se ejecuta",,3,Do 
+HU16,Comunicación y soporte,Como usuario del chatbot quiero que atienda al menos 100 usuarios simultáneos sin superar el 70 % de uso de CPU para mantener un servicio fluido.,"Dado que el entorno de pruebas (staging) está configurado con 100 instancias de cliente conectadas simultáneamente al endpoint WebSocket del chatbot
+Cuando se ejecuta un script de prueba que mantiene activas las 100 conexiones durante 5 minutos
+Entonces el monitor de recursos registra un uso de CPU promedio < 70 % en la instancia del servidor de chatbot","Dado que el servicio de monitoreo (p. ej. Prometheus) recoge métricas de CPU cada 10 s
+Cuando el chatbot atiende la prueba de carga
+Entonces las métricas de CPU (< 70 %) se almacenan en la serie chatbot_cpu_usage con etiquetas { instance, timestamp }","Dado que el uso de CPU en el servidor de chatbot supera el 70 % durante ≥ 1 minuto consecutivo
+Cuando el sistema de alertas detecta el umbral excedido
+Entonces se dispara un evento ALERT_CPU_HIGH y se envía una notificación inmediata al canal de DevOps","Dado que el servicio de chatbot ha alcanzado o superado el 70 % de uso de CPU
+Cuando un cliente intenta abrir una nueva conexión WebSocket
+Entonces el servidor responde con HTTP 503 (o código de cierre WS 1013) con mensaje “Servidor saturado, reintenta en unos segundos” y rechaza la conexión","Dado que la infraestructura está configurada con un orquestador que soporta escalado automático
+Cuando el uso de CPU permanece ≥ 70 % durante 2 minutos
+Entonces el orquestador lanza automáticamente una nueva réplica del servicio de chatbot para distribuir la carga","Dado que el cliente recibe un cierre de WebSocket o código 503 al intentar conectar
+Cuando el componente Chatbot captura el error
+Entonces muestra “Servicio momentáneamente saturado. Inténtalo de nuevo.” y registra { event:""ConnectionRefused"", timestamp, attemptedConnections } en chatbot_errors","Dado que ha finalizado un mes calendario
+Cuando se ejecuta el job de reporte en GET /api/monitoring/cpu-uptime?component=chatbot&month=MM&year=YYYY
+Entonces el sistema verifica que ≤ 5 % del tiempo mensual el CPU estuvo ≥ 70 % y genera un informe de cumplimiento","Dado que el cliente recibió un cierre WS 503
+Cuando transcurren 30 s después del rechazo
+Entonces el cliente intenta reconectar automáticamente hasta 3 veces con backoff exponencial, y si persiste el error, ofrece “Contacta soporte” en la UI","Dado que el orquestador crea o destruye réplicas del chatbot
+Cuando ocurre un evento de escalado automático
+Entonces el sistema registra en scaling_events { component:""chatbot"", action:""scaleUp""|""scaleDown"", replicasBefore, replicasAfter, timestamp }",,,5,Do 
+HU17,Seguridad y Privacidad,Como usuario quiero consentimiento explícito y anonimización de datos sensibles según Ley 1581/2012 y Decreto 1377/2013 para asegurar la privacidad.,"Dado que un usuario accede al formulario de registro (GET /registro)
+Cuando se renderiza <form id=""registrationForm"">
+Entonces aparece un checkbox obligatorio con texto de la Política de Privacidad (“He leído y acepto la Política de Privacidad de Juangel”) y un enlace a GET /politica-privacidad","Dado que el usuario marca el checkbox y envía POST /api/users con { name, email, birthDate, password, consent: true }
+Cuando el servidor procesa la petición
+Entonces responde HTTP 201, almacena { userId, consentGiven: true, consentTimestamp } en consent_logs y crea el usuario","Dado que el payload de registro carece de consent: true o checkbox desmarcado
+Cuando el cliente envía POST /api/users
+Entonces la API devuelve HTTP 400 con { error:""ConsentRequired"" } y la UI muestra inline “Debe aceptar la Política de Privacidad para continuar”","Dado que un usuario autenticado solicita anonimización de sus datos (POST /api/users/{id}/anonymize)
+Cuando el servidor recibe la petición válida con JWT
+Entonces reemplaza campos PII (name, email, address, etc.) por valores pseudonimizados, establece isAnonymized: true y retorna HTTP 200","Dado que el proceso de anonimización se completó exitosamente
+Cuando el backend finaliza la operación
+Entonces envía un correo a la dirección original (antes de anonimizar) con asunto “Tus datos han sido anonimizados” y detalles del cambio realizado","Dado que ocurre un fallo al insertar en consent_logs (por ejemplo, error de base de datos)
+Cuando el servidor procesa la creación de usuario
+Entonces la API responde HTTP 500 con { error:""ConsentLogError"" }, no crea el usuario y registra el incidente en security_incidents","Dado que el usuario solicita anonimización y la operación falla (error de conectividad o lógica)
+Cuando la petición POST /api/users/{id}/anonymize devuelve HTTP 500
+Entonces la API responde { error:""AnonymizationFailed"" }, mantiene datos intactos y la UI muestra “No se pudo anonimizar tus datos. Intenta más tarde.”","Dado que un usuario anonimizó sus datos y accede a GET /api/users/{id}
+Cuando el servidor procesa la solicitud
+Entonces retorna HTTP 200 con { userId, isAnonymized: true } y los campos PII retornan como null o valores genéricos (""Anónimo""), cumpliendo la normativa","Dado que alguien intenta acceder a datos PII de un usuario anonimizado
+When el endpoint /api/users/{id} detecta isAnonymized: true
+Entonces responde HTTP 403 y registra { userId, attemptedBy, timestamp, error:""AccessDeniedPII"" } en security_incidents",,,1,Do 
+HU18,Mantenibilidad y Observabilidad,"Como equipo de operaciones quiero logs estructurados y métricas expuestas a Prometheus para monitorear latencia, errores y uso de recursos en tiempo real.","Dado que cualquier componente de la aplicación genera un evento de log (info, warning, error)
+Cuando el log se emite desde el backend
+Entonces se registra en stdout/stderr una línea en formato JSON con campos estándares: timestamp, level, service, message, y un objeto metadata con información contextual (por ejemplo, route, userId, requestId)","Dado que Filebeat/Logstash (u otro agente) está configurado para capturar stdout/stderr
+Cuando un log JSON se escribe en la salida estándar
+Entonces el agente lo envía al clúster central sin introducir latencias significativas (overhead < 5 ms por evento)","Dado que el servicio HTTP está levantado en producción
+Cuando Prometheus realice GET /metrics
+Entonces el servidor responde HTTP 200 con el payload en texto formateado para Prometheus, incluyendo métricas como http_request_duration_seconds, app_error_total y process_cpu_seconds_total","Dado que se recibe cualquier petición HTTP a los endpoints principales
+Cuando se completa la respuesta
+Entonces el middleware registra la duración en un histogram http_request_duration_seconds{method,route} con buckets adecuados para capturar latencias de 10 ms a 5 s","Dado que un handler devuelve una respuesta con código ≥ 500
+Cuando el servidor emite la respuesta
+Entonces se incrementa el contador app_error_total{route,code} en Prometheus para facilitar alertas y dashboards","Dado que la aplicación corre en un entorno instrumentado
+Cuando Prometheus scrapea el endpoint /metrics
+Entonces incluye gauges como process_cpu_seconds_total y process_resident_memory_bytes, reflejando el uso de recursos en tiempo real","Dado que durante un scrape /metrics el handler lanza una excepción o timeout
+Cuando la petición GET /metrics retorna HTTP ≥ 500 o no responde en 5 s
+Entonces el servidor escribe en logs un error con message:""MetricsExposureError"", error, timestamp y responde HTTP 500 al scraper","Dado que Prometheus no recibe datos de una métrica crítica (por ejemplo, http_request_duration_seconds) tras 2 scrapes consecutivos
+Cuando se dispara la condición en la regla de alerta
+Entonces Prometheus emite una alerta MissingMetrics al canal de DevOps con detalles del job y la métrica faltante","Dado que se ejecuta el pipeline de integración en la rama main
+Cuando el job de checks incluye una llamada a GET /metrics
+Entonces debe recibir HTTP 200 con al menos 5 métricas diferentes, validando el schema Prometheus antes de aprobar el merge",,,6,Do 
+HU19,Visibilidad y marketing,"Como equipo de marketing quiero meta tags dinámicos, sitemap.xml y robots.txt para mejorar el posicionamiento SEO de la plataforma.","Dado que el usuario navega a cualquier página pública (/home, /catalogo, /productos/{id}, /nosotros)
+Cuando el servidor genera el HTML inicial o la SPA actualiza la ruta
+Entonces el <head> incluye dinámicamente <title>, <meta name=""description"">, <meta property=""og:title""> y <meta property=""og:description""> con valores específicos de la página (por ejemplo, nombre del producto y descripción)","Dado que la página no proporciona datos específicos (por ejemplo, listados sin descripción)
+Cuando el renderer detecta ausencia de título o descripción personalizada
+Entonces usa meta tags por defecto configuradas en el sistema (titleDefault, descriptionDefault) y registra un logger.warn(""Default meta tags used"", route)","Dado que la aplicación está desplegada en producción
+Cuando un crawler o navegador solicita GET /sitemap.xml
+Entonces el servidor devuelve HTTP 200 con un documento XML válido que lista todas las URLs públicas actualizadas en las últimas 24 h","Dado que existen nuevas rutas dinámicas (productos, categorías)
+Cuando se ejecuta el job diario de generación de sitemap
+Entonces el archivo sitemap.xml incluye <url><loc>, <lastmod>, <changefreq>, <priority> para cada ruta, y se guarda en /public/sitemap.xml","Dado que el sitemap.xml ha sido regenerado exitosamente
+Cuando finaliza la tarea de actualización (cron a las 03:00 AM)
+Entonces el sistema envía solicitudes a los endpoints de ping de Google y Bing (GET https://www.google.com/ping?sitemap=…) y registra respuestas en seo_logs","Dado que un crawler solicita GET /robots.txt
+Cuando el servidor sirve el archivo
+Entonces devuelve HTTP 200 con el contenido:
+
+User-agent: *
+
+Allow: /
+
+Sitemap: https://sitio.com/sitemap.xml","Dado que existen rutas privadas o de administración (/admin, /api)
+Cuando se actualiza el robots.txt
+Entonces incluye líneas Disallow: /admin y Disallow: /api, y la versión se incrementa en seo_logs","Dado que el job diario falla al compilar URLs por error de base de datos o excepción
+Cuando el proceso dispara excepción
+Entonces registra { error, timestamp } en seo_errors, no sobrescribe el sitemap.xml existente y envía alerta al equipo de DevOps","Dado que robots.txt no se encuentra en /public o retorna 404
+Cuando un crawler lo solicita
+Entonces el servidor sirve dinámicamente un robots.txt minimal con User-agent: *\nDisallow: y registra la generación en seo_logs","Dado que se crea o modifica un PR que toca el código de SEO
+Cuando el pipeline de CI ejecuta npm run seo:validate
+Entonces verifica la validez de sitemap.xml contra su XSD, comprueba la existencia de robots.txt y falla si alguno no cumple el esquema o está ausente",,4,Do 
+HU20,Cuenta y seguridad,Como usuario registrado quiero recuperar o cambiar mi contraseña mediante un enlace seguro enviado por correo para poder acceder si olvido mi clave.,"Dado que estoy en la página principal (GET /) y hago clic en <NavLink to=""/olvide-contraseña"">Olvidé mi contraseña</NavLink>
+Cuando el cliente emite GET /olvide-contraseña
+Entonces recibe HTTP 200, renderiza <form id=""forgotForm""> con campo email y botón “Enviar enlace”","Dado que el formulario #forgotForm está visible y el campo email contiene user@ejemplo.com
+Cuando hago clic en “Enviar enlace” (onClick que dispara POST /api/auth/forgot-password con { email })
+Entonces la API responde HTTP 200, el cliente muestra un toast “Correo de recuperación enviado” y limpia el campo","Dado que ingreso un email no existente y clico “Enviar enlace”
+Cuando la petición POST /api/auth/forgot-password retorna HTTP 404 con { error:""UserNotFound"" }
+Entonces la UI muestra “Correo no registrado” junto al campo #email y no limpia el formulario","Dado que el usuario envía su email correcto y clica “Enviar enlace”
+Cuando la API retorna HTTP 500
+Entonces la UI muestra banner rojo “Error del servidor. Inténtelo más tarde.” y registra logger.error","Dado que recibí el correo y accedo a /reset-password?token=abc123
+Cuando el cliente emite GET /api/auth/validate-token?token=abc123
+Entonces la API devuelve HTTP 200 y el cliente renderiza <form id=""resetForm""> con campos newPassword, confirmPassword y botón “Cambiar contraseña”","Dado que accedo a /reset-password?token=xyz con token inválido o expirado
+Cuando GET /api/auth/validate-token?token=xyz retorna HTTP 400 con { error:""InvalidOrExpiredToken"" }
+Entonces la UI muestra “Enlace no válido o expirado”, deshabilita el formulario y ofrece enlace “Reenviar correo”","Dado que el formulario #resetForm está cargado y visible
+Cuando ingreso un newPassword que no cumple el regex de seguridad (mínimo 8 caracteres, 1 mayúscula, 1 número) y pierdo el foco de #newPassword
+Entonces el cliente muestra inline “La contraseña debe tener ≥8 caracteres, 1 mayúscula y 1 número” y deshabilita el botón “Cambiar contraseña”","Dado que he ingresado valores distintos en newPassword y confirmPassword
+Cuando pierdo el foco de #confirmPassword
+Entonces el cliente muestra inline “Las contraseñas no coinciden” y deshabilita el botón “Cambiar contraseña”","Dado que ambos campos pasan validación de formato y coincidencia
+Cuando hago clic en “Cambiar contraseña” (onClick que dispara POST /api/auth/reset-password con { token:""abc123"", newPassword })
+Entonces la API responde HTTP 200, el cliente muestra toast “Contraseña actualizada con éxito” y redirige a /login","Dado que envío el POST /api/auth/reset-password con token válido
+Cuando la API retorna HTTP 500
+Entonces la UI muestra banner rojo “Error al cambiar contraseña. Inténtalo de nuevo.” y registra el error en logger.error","Dado que el usuario pulsa “Cambiar contraseña” y la petición excede el timeout (10 s) o hay error de red
+Cuando el cliente captura la excepción
+Entonces muestra “No se pudo conectar. Verifica tu red e inténtalo de nuevo.” y habilita el botón “Cambiar contraseña” para reintentar**",3,Do 
+HU21,Facturación y pagos,"Como cliente quiero pagar mis pedidos mediante una pasarela de pagos (PSE, PayU, etc.) y ver si la transacción fue exitosa o fallida.","Dado que he iniciado sesión y tengo productos en el carrito
+Cuando confirmo el pedido y selecciono un método de pago (PSE o PayU) en el paso final del checkout
+Entonces la UI realiza una petición POST /api/orders con los datos del pedido, y el backend responde con una URL de redirección segura de la pasarela correspondiente
+Entonces el cliente es redirigido automáticamente a esa URL para iniciar el proceso de pago","Dado que estoy en la vista de confirmación de compra
+Cuando la UI carga correctamente los datos del pedido
+Entonces se visualiza un resumen con productos, cantidades, total a pagar, e información del cliente antes de redirigir a la pasarela","Dado que he realizado el pago en la pasarela y esta redirige al frontend con ?status=success&transactionId=xyz
+Cuando el backend valida la transacción con el proveedor (por ejemplo, PayU) vía webhook o consulta directa
+Entonces responde con HTTP 200 y actualiza el pedido a estado “Pagado”, mostrando al cliente un mensaje “¡Pago realizado con éxito!” junto con el resumen de la orden","Dado que la pasarela redirige con ?status=failure o el webhook indica fallo de validación
+Cuando el backend detecta una transacción fallida
+Entonces el sistema marca el pedido como “Fallido” y muestra al usuario un mensaje “Tu pago no pudo procesarse. Intenta nuevamente o usa otro método de pago”","Dado que la pasarela redirige sin parámetros o con una estructura inválida
+Cuando la UI o backend no pueden validar el estado del pago
+Entonces el cliente ve un mensaje “Hubo un problema al validar tu transacción. Verifica tu estado desde ‘Mis pedidos’ o contáctanos”","Dado que el cliente completa o falla una transacción
+Cuando la UI recibe respuesta desde la pasarela
+Entonces se registra en la tabla payment_logs con { userId, orderId, transactionId, status, timestamp }","Dado que el usuario tiene un pedido en estado “Fallido”
+Cuando ingresa a “Mis pedidos” y pulsa “Reintentar pago”
+Entonces se redirige nuevamente a la pasarela con la misma referencia del pedido original","Dado que el backend intenta registrar o verificar el pago con la API de la pasarela
+Cuando la pasarela devuelve error HTTP 5xx o no responde
+Entonces el backend marca el estado como “Error técnico” y la UI muestra “No pudimos validar tu transacción. Intentaremos verificarla más tarde”",,,,2,Do 
+HU22,Usabilidad y accesibilidad,"Como usuario quiero que la interfaz se adapte a móviles, tablets, laptops, escritorios y smart TV para navegar cómodamente en cualquier dispositivo.","Dado que el usuario accede a la aplicación con un dispositivo móvil en orientación portrait (width = 360px)
+Cuando la ruta /home dispara DOMContentLoaded
+Entonces el menú de navegación colapsa en un ícono “hamburger”, las tarjetas de producto se muestran en una columna y no aparece scroll horizontal","Dado que el usuario rota el dispositivo a landscape (width = 640px)
+Cuando el evento resize dispara la recalculación de estilos CSS
+Entonces el menú permanece colapsado, las tarjetas se organizan en dos columnas adaptativas y no hay solapamiento de elementos","Dado que el usuario usa una tablet en portrait (width = 768px)
+Cuando carga cualquier ruta (por ejemplo, /catalogo)
+Entonces el menú de navegación se expande en un sidebar colapsable y las tarjetas de producto se muestran en dos columnas sin scroll horizontal","Dado que la tablet se orienta en landscape (width = 1024px)
+Cuando ocurre el evento resize
+Entonces el sidebar permanece visible, las tarjetas se ajustan a tres columnas y las imágenes mantienen proporción sin deformarse","Dado que el usuario accede desde un laptop (width = 1366px)
+Cuando el componente monta y aplica media queries
+Entonces el menú de navegación muestra enlaces completos, las tarjetas se distribuyen en tres columnas y los formularios mantienen alineación horizontal correcta","Dado que el usuario usa un monitor desktop (width = 1920px)
+Cuando carga la página de detalles de producto
+Entonces el layout utiliza un grid de cuatro columnas y el espacio en blanco se distribuye de forma equilibrada, sin estirar innecesariamente imágenes ni texto","Dado que el usuario accede desde un smart TV (width = 1920px) y navega con teclado o control remoto
+Cuando el foco via :focus se mueve entre elementos
+Entonces los elementos clave (botones, tarjetas) reciben un outline visible y el tamaño de fuente y botones es mayor (mínimo 18 px) para legibilidad a distancia","Dado que el usuario aplica zoom al navegador (≥ 200 %) o modifica el tamaño de fuente en ajustes de accesibilidad
+Cuando recarga o navega a otra ruta
+Entonces todos los elementos se reflowean correctamente, los textos no se solapan y los botones siguen siendo accesibles sin perder funcionalidad","Dado que los estilos CSS no cargan (error 404/timeout de hoja de estilos)
+Cuando la aplicación detecta document.styleSheets.length === 0
+Entonces se aplica un estilo inline básico, el contenido queda legible en una sola columna, y la UI muestra un banner “Modo básico activado por fallo de estilos” para garantizar accesibilidad mínima",,,6,Do 
+HU23,Reportes y dashboard,"Como administrador quiero disponer de un dashboard con métricas clave (pedidos del día, facturación, clientes activos, etc.) para tener una visión rápida del estado del negocio.","Dado que el administrador accede a GET /admin/dashboard con JWT válido
+Cuando el frontend consulta el endpoint correspondiente
+Entonces el backend responde con HTTP 200 y un JSON que incluye: totalPedidosHoy, facturacionHoy, clientesActivosHoy, productosMasVendidos","Dado que se recibe el JSON con métricas
+Cuando el componente DashboardMetrics se monta en el DOM
+Entonces la interfaz renderiza tarjetas con íconos y cifras destacadas para cada métrica clave del día","Dado que el dashboard está visible en pantalla
+Cuando pasan 5 minutos desde la última consulta
+Entonces el sistema reenvía la solicitud al endpoint y actualiza las tarjetas con los nuevos valores","Dado que un usuario sin rol admin intenta acceder a /admin/dashboard
+Cuando la API detecta el rol no autorizado
+Entonces responde con HTTP 403 Forbidden y el mensaje: “No tienes permisos para ver esta sección”","Dado que hay un fallo en la consulta al endpoint de métricas (por ejemplo, error 500 en backend)
+Cuando el frontend intenta renderizar los datos
+Entonces muestra un mensaje de error: “No se pudieron cargar las métricas. Intenta nuevamente más tarde” y ofrece botón “Reintentar”","Dado que ocurre un fallo en la ejecución del endpoint /api/admin/dashboard
+Cuando se lanza una excepción en el servidor
+Entonces se guarda en el log de errores { timestamp, adminId, endpoint, errorMessage, stackTrace } y se dispara una alerta al canal de monitoreo interno","Dado que el componente DashboardMetrics falla en obtener los datos (por error de red u otro)
+Cuando no se recibe respuesta válida en 3 segundos
+Entonces el sistema realiza hasta 2 reintentos automáticos con backoff exponencial antes de mostrar el mensaje de error al usuario",,,,,4,Do 
+HU24,,Como cliente quiero que el chatbot responda a consultas estándar en menos de 2 s el 95 % de las veces para recibir respuestas rápidas y fluidas.,"Dado que <Chatbot /> está conectado vía WebSocket (readyState === 1) y el usuario ingresa una consulta marcada como “estándar” (por ejemplo, FAQ)
+Cuando el cliente envía el mensaje al servidor (socket.send({ message }))
+Entonces el servidor devuelve la respuesta en menos de 2000 ms, y el cliente la renderiza en la interfaz en formato de burbuja de chat","Dado que se ejecutan 100 peticiones consecutivas de prueba al chatbot en un entorno de QA
+Cuando el script de prueba registra los tiempos de respuesta de cada consulta
+Entonces al menos 95 de las respuestas deben tener latency < 2000 ms; de lo contrario, el test falla","Dado que cada respuesta incluye un timestamp de envío y de recepción
+Cuando se procesa la respuesta en el cliente
+Entonces se registra en la tabla performance_logs un objeto { component:""Chatbot"", latency, timestamp } para cada interacción","Dado que al final de cada día el sistema agrupa las entradas de performance_logs del chatbot
+Cuando el porcentaje de respuestas con latency ≥ 2000 ms supere el 5 %
+Entonces se envía un correo automático al equipo de DevOps con asunto “Alerta SLA Chatbot: Latencias altas” y detalles del porcentaje y horarios afectados","Dado que una respuesta demora más de 2000 ms y readyState === 1
+Cuando el cliente detecta latency ≥ 2000 ms
+Entonces vuelve a enviar la misma consulta hasta 2 veces en cola, manteniendo la interfaz informada (“Reintentando…”), y reporta cada intento en performance_logs","Dado que el WebSocket emite onerror o onclose durante una consulta estándar
+Cuando ocurre el fallo
+Entonces el cliente muestra “Error de conexión. Reintentando…” e intenta reconectar hasta 3 veces con backoff exponencial; si no logra reconectar, muestra “Chatbot no disponible” en el área de chat","Dado que tras los reintentos el chatbot no responde en tiempo o conexiona falla
+Cuando el cliente detecta que no se cumple latency < 2000 ms tras reintentos
+Entonces despliega un enlace o botón “Contactar por WhatsApp” o “Enviar mensaje” para atención humana y registra el evento en notification_errors",,,,,5,Do 
+HU25,Compatibilidad y portabilidad,"Como usuario quiero que el sitio funcione sin errores en las últimas dos versiones de Chrome, Firefox, Edge y Safari para navegar en mi navegador preferido con total compatibilidad.","Dado que el usuario utiliza Chrome en la versión más reciente o la anterior
+Cuando accede a /home
+Entonces la petición retorna HTTP 200, el evento DOMContentLoaded se dispara sin errores, y la consola de desarrollo no muestra entradas console.error ni console.warn.","Dado que el usuario utiliza Firefox en la versión más reciente o la anterior
+Cuando accede a /home
+Entonces la petición retorna HTTP 200, el DOM se renderiza correctamente y no aparecen errores en la consola.","Dado que el usuario utiliza Edge en la versión más reciente o la anterior
+Cuando accede a /home
+Entonces la página carga sin fallos de estilo ni funcionalidad, y no se registran errores en consola.","Dado que el usuario utiliza Safari en la versión más reciente o la anterior
+Cuando accede a /home
+Entonces todos los elementos (menú, banners y footer) se muestran correctamente sin errores en consola ni en el inspector de redes.","Dado que un usuario no autenticado abre /login en Chrome, Firefox, Edge o Safari
+Cuando ingresa credenciales válidas y hace clic en “Iniciar sesión”
+Entonces recibe HTTP 200, se almacena el JWT, se redirige a /mi-cuenta y la UI muestra “Bienvenido” sin diferencias entre navegadores.","Dado que el usuario ha iniciado sesión y está en /catalogo en cualquiera de los cuatro navegadores
+Cuando busca “maniquí” y añade el primer producto al carrito
+Entonces la API retorna HTTP 200, el contador del carrito incrementa y el ítem aparece en /carrito de forma idéntica en cada navegador.","Dado que el usuario navega por /catalogo en cualquier navegador
+Cuando inspecciona el layout con herramientas de desarrollo
+Entonces no hay elementos fuera de su contenedor ni barras de scroll horizontales inesperadas en las últimas dos versiones de cada navegador.","Dado que el navegador no implementa una API moderna usada por el sitio (por ejemplo Intl.DateTimeFormat)
+Cuando se invoca la función correspondiente en la UI
+Entonces el cliente aplica un polyfill y la funcionalidad se ejecuta correctamente sin errores en consola.","Dado que el pipeline de CI incluye un job de UI tests con BrowserStack o Selenium
+Cuando se ejecutan pruebas en las últimas dos versiones de Chrome, Firefox, Edge y Safari
+Entonces todos los casos de prueba (navegación, login, búsqueda, carrito) deben pasar; de lo contrario, el job falla e impide el merge.","Dado que se identifica un error reproducible en alguno de los navegadores soportados
+Cuando se registra el incidente en el sistema de logs (compatibility_errors)
+Entonces se envía un correo al equipo de desarrollo con { browser, version, route, errorStack, timestamp } para su corrección.",,6,Do 
+HU26,Usabilidad y Accesibilidad,Como usuario con discapacidad quiero que el sitio cumpla WCAG 2.1 nivel AA para navegar sin barreras de accesibilidad.,"Dado que el usuario accede a cualquier página (/home, /catalogo, etc.)
+Cuando presiona la tecla Tab en el primer foco de la página
+Entonces el foco llega al enlace <a href=""#mainContent"" class=""skip-link"">Ir al contenido</a>, y al activarlo (Enter) el foco salta al contenedor <main id=""mainContent"">","Dado que el usuario navega con teclado (Tab, Shift+Tab, Enter, Space)
+Cuando recorre los elementos interactivos (botones, enlaces, formularios)
+Entonces todos son accesibles (tabindex=""0"" o enfoque natural), y cada foco está resaltado con un contorno visible (contrast ratio ≥ 3:1)","Dado que la página muestra imágenes informativas (<img> dentro de <ProductCard />, logos, iconos de acción)
+Cuando el DOM carga
+Entonces cada <img> incluye atributo alt descriptivo no vacío (alt=""Foto del maniquí modelo X"") y las imágenes puramente decorativas tienen alt="""" y role=""presentation""","Dado que el CSS aplica estilos de texto y fondo en todos los componentes
+Cuando el usuario inspecciona con herramienta de medición de contraste
+Entonces todo texto normal (≤ 18 px) cumple ratio de contraste ≥ 4.5:1 y texto grande (≥ 18 px pero < 24 px) ≥ 3:1 según WCAG 2.1 AA","Dado que existen formularios (#registrationForm, #loginForm, etc.)
+Cuando el lector de pantalla (NVDA, JAWS) recorre los campos
+Entonces cada <input> y <select> tiene un <label for=""…""> correctamente asociado o aria-label, y los mensajes de error inline usan aria-live=""assertive""","Dado que el usuario envía un formulario o interactúa con acciones AJAX
+Cuando el sistema muestra un spinner o error
+Entonces el spinner tiene aria-busy=""true"" sobre el contenedor, y los mensajes de error se actualizan en un <div role=""alert"" aria-live=""polite"">","Dado que cada página usa encabezados (<h1>, <h2>, …) para estructurar el contenido
+Cuando el lector de pantalla navega por encabezados (h + número)
+Entonces la jerarquía es correcta (solo un <h1> por página, <h2> para subsecciones) y refleja la estructura visual","Dado que existen componentes personalizados (tabs, modales, selectores de estado)
+Cuando el usuario interactúa (clic, teclado)
+Entonces cada componente tiene atributos ARIA adecuados (role=""tablist"", aria-selected, aria-expanded) para transmitir su estado al lector de pantalla","Dado que CSS o JavaScript no se cargan (error 404/timeout)
+Cuando document.styleSheets.length === 0 o window.jQuery es undefined
+Entonces la página muestra contenido en una sola columna, los enlaces y formularios siguen operativos nativamente, y un banner notifica “Modo accesible básico activado”",,,1,Do 
+HU27,Rendimiento y Escalabilidad,Como desarrollador quiero que el servidor API responda en menos de 500 ms el 95 % de las veces para asegurar un backend eficiente.,"Dado que el entorno de QA está configurado para simular 100 peticiones concurrentes a GET /api/health
+Cuando el script de prueba emite las 100 solicitudes en ráfaga
+Entonces al menos 95 respuestas retornan HTTP 200 en < 500 ms","Dado que el endpoint GET /api/products se utiliza para poblar el catálogo
+Cuando se ejecutan 100 peticiones consecutivas a ese endpoint
+Entonces ≥ 95 respuestas retornan HTTP 200 y payload completo en < 500 ms","Dado que cualquier endpoint recibe una petición HTTP
+Cuando la respuesta se envía
+Entonces el servidor registra en la tabla performance_logs un registro { route, statusCode, latencyMs, timestamp }","Dado que al final de cada hora el sistema agrupa las latencias registradas
+Cuando > 5 % de las solicitudes a cualquier endpoint clave superan 500 ms
+Entonces se dispara una alerta ALERT_PERFORMANCE_SLA y se notifica al canal de DevOps con estadísticas de latencia por ruta","Dado que se activa el pipeline de CI en la rama main
+Cuando el job de rendimiento ejecuta el test de 100 peticiones para /api/health y /api/products
+Entonces el job falla si < 95 respuestas cumplen el umbral de < 500 ms y bloquea el merge","Dado que una petición a cualquier endpoint clave excede 500 ms en producción
+Cuando se detecta en tiempo real (instrumentación APM)
+Entonces el servidor añade un encabezado X-Warning: SlowResponse en la respuesta y registra el evento en performance_errors","Dado que se despliega una mejora de código en producción
+Cuando se ejecuta el test de carga manual o automático sobre los endpoints definidos
+Entonces ≥ 95 peticiones de 100 siguen completándose en < 500 ms, validando la efectividad del cambio","Dado que una llamada interna (p. ej. base de datos) excede su propio timeout configurado (p. ej. 400 ms)
+Cuando el servidor no puede procesar dentro de ese plazo
+Entonces responde HTTP 504 Gateway Timeout al cliente, registra { route, timeoutSource, timestamp } en performance_errors y no bloquea hilos en espera",,,,7,Do 
+HU28,Seguridad y privacidad,Como usuario quiero que el chatbot cifre toda la comunicación con TLS 1.3 y cumpla la Ley 1581/2012 de protección de datos para proteger mi información personal.,"Dado que el usuario hace clic en “Chatbot” y <Chatbot /> intenta abrir la conexión
+Cuando se invoca new WebSocket(""wss://api.juangel.com/chat"")
+Entonces la negociación TLS se forza a la versión 1.3, y la conexión se establece solo si el protocolo acordado es TLS 1.3","Dado que el servidor y cliente soportan múltiples versiones de TLS
+Cuando la negociación TLS intenta usar TLS 1.2 o inferior
+Entonces la conexión se cierra inmediatamente con código de cierre WebSocket 1002 y el cliente muestra “Error de seguridad: protocolo TLS no soportado”","Dado que el certificado del servidor TLS es inválido, caducado o no coincide con el dominio
+Cuando el cliente detecta la anomalía durante el handshake
+Entonces se cancela la conexión, se muestra “Error de seguridad: certificado no válido” y no se permite reenviar mensajes","Dado que el usuario carga <Chatbot /> por primera vez en la sesión
+Cuando el componente monta
+Entonces se despliega un modal con el texto de la Política de protección de datos (Ley 1581/2012) y un botón “Acepto” que bloquea el chat hasta la aceptación","Dado que el usuario pulsa “Acepto” en el modal de privacidad
+Cuando el cliente envía POST /api/chatbot/consent con { userId, consent: true, timestamp }
+Entonces la API responde HTTP 200 y el log consent_logs almacena la entrada para auditoría","Dado que la conexión WebSocket está establecida con TLS 1.3
+Cuando el usuario envía un mensaje al chatbot
+Entonces cada payload JSON se transmite cifrado en el canal WSS y no puede ser inspeccionado en texto plano","Dado que <Chatbot /> registra eventos en chatbot_logs (mensaje enviado, respuesta recibida)
+Cuando el cliente envía datos de log (POST /api/chatbot/log)
+Entonces el payload omite campos sensibles (email, nombre) y solo incluye un identificador anónimo (userHash) y la marca de tiempo","Dado que ocurre un error interno de cifrado (p. ej. librería TLS falla)
+Cuando el cliente detecta onerror durante socket.send()
+Entonces muestra “Error de seguridad al enviar tu mensaje. Inténtalo de nuevo.” y no revela ni reintenta sin una nueva negociación TLS","Dado que cualquiera de los pasos de seguridad (handshake TLS, certificado, cifrado, anonimización) falla
+Cuando se detecta el incidente
+Entonces el cliente envía un evento a security_incidents con { component:""chatbot"", errorType, timestamp } y despliega un banner discreto “Incidente de seguridad registrado. Por favor, contacta soporte.”",,,3,Do 
+HU29,Disponibilidad,Como administrador del sistema quiero que toda la plataforma esté disponible al menos el 99.9 % del tiempo mensual para garantizar la continuidad.,"Dado que el sistema está operando normalmente
+Cuando un monitor de disponibilidad realiza una verificación periódica (cada minuto) a los servicios críticos del sistema
+Entonces el servicio responde con HTTP 200 OK indicando que la plataforma está disponible.","Dado que un componente del sistema (base de datos, API, servidor web) está fuera de servicio
+Cuando el monitoreo detecta una respuesta de error (código HTTP ≥ 500 o timeout)
+Entonces el sistema registra un evento de caída en el log de monitoreo y emite una alerta para el equipo de operaciones.","Dado que un componente crítico del sistema se cae (ej., servidor web)
+Cuando el sistema de recuperación automática detecta el fallo
+Entonces se inicia un proceso de reinicio del componente afectado y, si la recuperación es exitosa, se envía una notificación de restablecimiento.","Dado que el sistema está inactivo por más de 15 minutos
+Cuando el monitoreo detecta la inactividad
+Entonces el sistema envía un correo de alerta al administrador con detalles sobre el fallo y la duración del tiempo de inactividad.","Dado que se requiere realizar mantenimiento programado que puede afectar la disponibilidad del sistema
+Cuando se planifica el mantenimiento a través del sistema de gestión
+Entonces el sistema envía una notificación con 24 horas de anticipación a los usuarios sobre la ventana de mantenimiento y posibles tiempos de inactividad.","Dado que el sistema ha estado operando durante todo el mes
+Cuando se calcula la disponibilidad mensual a través de métricas automáticas
+Entonces la plataforma debe cumplir con un uptime mínimo del 99.9% (lo que equivale a no más de 43.2 minutos de inactividad mensual).","Dado que el cálculo de disponibilidad mensual detecta que el uptime es inferior al 99.9%
+Cuando se registre una caída que supera el límite de tiempo (más de 43.2 minutos)
+Entonces el sistema genera una alerta interna y un informe detallado de las causas de la inactividad.","Dado que el sistema de monitoreo no puede acceder a los endpoints de verificación (por error en la red o sistema de monitoreo)
+Cuando se detecta un fallo en la verificación de estado del sistema
+Entonces el sistema reintenta la verificación automáticamente hasta 3 veces en intervalos de 1 minuto. Si falla, emite una alerta al equipo de operaciones.","Dado que el sistema experimenta tiempos de inactividad, ya sea planificada o no planificada
+Cuando la inactividad excede el tiempo permitido (más de 43.2 minutos en el mes)
+Entonces se registra un evento detallado en los logs de auditoría con el motivo de la inactividad, la duración y los pasos de recuperación.",,,6,Do 
+HU30,,Como usuario quiero que cualquier página cargue en menos de 3 s con conexión de 10 Mbps para navegar sin demoras.,"Dado que el usuario abre la aplicación en un entorno con ancho de banda simulado de 10 Mbps (p. ej. mediante herramientas de test o CDN configurado)
+Cuando la página /home emite el evento DOMContentLoaded
+Entonces el cliente calcula loadTime = timestamp_DOMContentLoaded – timestamp_navigationStart y verifica que loadTime < 3000 ms","Dado que el usuario navega a /catalogo tras haber cargado /home
+Cuando el componente dispara GET /api/products y emite DOMContentLoaded de la nueva ruta
+Entonces el cliente registra en performance_logs el loadTime y asegura que sea < 3000 ms","Dado que el usuario hace clic en “Ver detalles” de un producto y navega a /productos/{id}
+Cuando se dispara DOMContentLoaded en esa ruta
+Entonces el cliente guarda en performance_logs el loadTime y verifica que < 3000 ms","Dado que cualquier página (/home, /catalogo, /productos/{id}) tarda ≥ 3000 ms en DOMContentLoaded
+Cuando se detecta loadTime >= 3000 ms
+Entonces el cliente envía un registro a performance_logs con { route, loadTime, timestamp, connection:""10Mbps"" } y emite un evento interno performance:slow_page","Dado que en un mes se registran ≥ 5 incidencias de páginas que tardan ≥ 3000 ms
+Cuando el backend procesa los logs mensuales
+Entonces envía un correo a devteam@example.com con el resumen de rutas afectadas y tiempos medios de carga","Dado que la carga de algún recurso crítico (CSS/JS/api) falla o excede timeout (p. ej. 10 s)
+Cuando ocurre fetch o carga de script con error o timeout
+Entonces la UI muestra un mensaje “Error al cargar contenido. Intenta recargar la página.” y registra { resource, route, errorType } en performance_errors",,,,,,5,Do 
+HU31,Comunicación y soporte,"Como cliente quiero un chatbot que responda FAQs sobre productos, servicios y estado de mis pedidos en tiempo real para obtener asistencia inmediata.","Dado que estoy autenticado o como invitado en cualquier ruta y el componente <Chatbot /> está presente con visible = false
+Cuando hago clic en el botón “Chatbot” (onClick en <button id=""openChatbot"">)
+Entonces <Chatbot /> cambia a visible = true, abre conexión WebSocket a wss://api.juangel.com/chat y muestra el área de mensajes e input vacío","Dado que <Chatbot /> inicia la conexión WebSocket
+Cuando el socket emite el evento onopen
+Entonces la UI muestra el mensaje del sistema “¿En qué puedo ayudarte hoy?” en el área de chat","Dado que <Chatbot /> está conectado y existe una FAQ para “¿Cuáles son sus productos disponibles?”
+Cuando envío el mensaje exactamente “¿Cuáles son sus productos disponibles?” (evento onSubmit)
+Entonces el cliente envía { message: ""¿Cuáles son sus productos disponibles?"" } vía WebSocket, recibe en < 2 s { answer } y lo renderiza en burbuja de respuesta","Dado que la base de FAQs contiene una entrada para “¿Ofrecen reparación de maniquíes?”
+Cuando envío “¿Ofrecen reparación de maniquíes?”
+Entonces en < 2 s aparece la respuesta predefinida formateada en <p>{answer}</p>","Dado que el usuario tiene sesión activa y el WebSocket ha recibido su userId
+Cuando envío “Estado de mi pedido 123”
+Entonces el backend valida orderId=123, devuelve { answer: ""Su pedido 123 está en Enviado"" } y el cliente muestra ese texto en < 2 s","Dado que envío una pregunta no contemplada en la base de FAQs ({ answer: null })
+Cuando el servidor retorna { answer: null } con HTTP 200
+Entonces la UI muestra “Lo siento, no puedo responder a eso por ahora.” y mantiene la sesión de chat abierta","Dado que he enviado cualquier mensaje al chatbot
+Cuando recibo la respuesta del servidor
+Entonces el cliente mide latency = timestamp_response - timestamp_request y guarda { component: ""Chatbot"", latency } en performance_logs, comprobando que latency < 2000 ms","Dado que el WebSocket ha sufrido un fallo (onerror o onclose)
+Cuando <Chatbot /> detecta el error de conexión
+Entonces la UI muestra “Error de chat. Verifica tu conexión.” y socket.reconnect() tras 5 s","Dado que <Chatbot /> está visible en pantalla
+Cuando hago clic en el icono “Cerrar” (onClick en <button id=""closeChatbot"">)
+Entonces <Chatbot /> cambia a visible = false, cierra la conexión WebSocket (socket.close()) y conserva la sesión del usuario",,,5,Do 
+HU32,Disponibilidad,"Como cliente quiero que el chatbot esté disponible al menos el 99.5 % del tiempo mensual, incluidos fines de semana y festivos para recibir asistencia en cualquier momento.","Dado que el chatbot está operativo
+Cuando el sistema de monitoreo realiza una petición de prueba a su endpoint cada minuto
+Entonces la API responde con HTTP 200 OK, confirmando que el servicio está disponible.","Dado que el chatbot no responde correctamente
+Cuando el sistema de monitoreo obtiene una respuesta con error HTTP ≥ 500 o timeout
+Entonces el incidente se registra en el log de disponibilidad y se emite una alerta al equipo técnico.","Dado que una verificación del estado del chatbot ha fallado
+Cuando se detecta el error
+Entonces el sistema realiza hasta 3 reintentos automáticos en intervalos de 60 segundos antes de marcar el servicio como inactivo.","Dado que el chatbot lleva más de 10 minutos inactivo
+Cuando el monitoreo confirma inactividad sostenida
+Entonces se notifica automáticamente al canal de soporte técnico con detalles del error, logs y timestamp del fallo.","Dado que ha transcurrido un mes de operación
+Cuando se calcula el uptime del chatbot
+Entonces debe cumplir con una disponibilidad mínima del 99.5% mensual, lo que equivale a no más de 216 minutos (3.6 horas) de inactividad al mes.","Dado que el chatbot presenta inactividad planificada o no planificada
+Cuando se detecta el evento
+Entonces se almacena en el log de chatbot_downtime con: timestamp inicio, timestamp fin, duración total y causa (manual/automática/error).","Dado que el uptime mensual del chatbot cae por debajo del 99.5%
+Cuando se genera el reporte mensual de disponibilidad
+Entonces se emite un email al administrador con el informe técnico, las ventanas de caída y acciones tomadas.","Dado que se ha programado una tarea de mantenimiento del chatbot
+Cuando se registre en el sistema con al menos 24 horas de anticipación
+Entonces se publica un aviso temporal en la UI del chatbot informando la ventana de indisponibilidad con fecha y hora estimada.","Dado que el chatbot está inactivo
+Cuando un usuario intenta iniciar una conversación
+Entonces se muestra un mensaje automático: ""El servicio de asistencia automática no está disponible en este momento. Por favor, intenta más tarde o contáctanos por WhatsApp o formulario.""",,,7,Do 
+HU33,Gestión de pedidos,"Como cliente quiero recibir notificaciones automáticas (correo/WhatsApp) cuando el estado de mi pedido cambie a procesado, enviado o entregado para estar informado sin tener que consultar.","Dado que el pedido con orderId=123 cambia su estado a “Procesado” en la base de datos
+Cuando el backend emite el evento notification:order_processed
+Entonces el servicio de correo envía a user@example.com un email con asunto “Pedido 123 procesado” y cuerpo que incluye orderId, fecha y estado","Dado que el pedido 123 entra en estado “Procesado” y el usuario tiene número +57... registrado
+Cuando el backend invoca el webhook de WhatsApp con payload { orderId:123, status:""Procesado"" }
+Entonces la API de WhatsApp entrega al usuario un mensaje “Tu pedido 123 ha sido procesado”","Dado que el pedido 123 cambia su estado a “Enviado”
+Cuando el backend emite notification:order_sent
+Entonces el sistema envía a user@example.com un email con asunto “Pedido 123 enviado” y cuerpo con enlace de seguimiento","Dado que el pedido 123 está marcado como “Enviado” y hay un número de WhatsApp registrado
+Cuando se invoca el servicio de mensajería con { orderId:123, status:""Enviado"" }
+Entonces el usuario recibe WhatsApp “Tu pedido 123 ha salido para entrega”","Dado que el pedido 123 cambia su estado a “Entregado”
+Cuando el backend emite notification:order_delivered
+Entonces el sistema envía un email a user@example.com con asunto “Pedido 123 entregado” y cuerpo que invita a calificar el servicio
+
+ ","Dado que el pedido 123 ha sido “Entregado” y el usuario configuró notificaciones via WhatsApp
+Cuando se invoca el webhook de WhatsApp con { orderId:123, status:""Entregado"" }
+Entonces el usuario recibe WhatsApp “Tu pedido 123 ha sido entregado. ¡Gracias por tu compra!”","Dado que el servicio de correo retorna error SMTP o código ≥ 500
+Cuando se detecta el fallo en el envío
+Entonces el sistema reintenta hasta 3 veces con backoff exponencial y, si persiste, registra { orderId, channel:""email"", error } en la tabla notification_errors","Dado que la API de WhatsApp devuelve error (4xx/5xx)
+Cuando se intercepta la excepción o código de fallo
+Entonces el servicio reintenta 2 veces y, si sigue fallando, guarda { orderId, channel:""whatsapp"", error } en notification_errors","Dado que cualquier notificación (email o WhatsApp) falla tras los reintentos
+Cuando se registra una entrada en notification_errors
+Entonces el sistema emite un evento notification:failure que envía un email al admin con detalles del fallo y orderId",,,3,Do 
+HU34,Administración y Backoffice,"Como administrador quiero registrar auditorías de acciones críticas (login, cambios de estado, eliminaciones) para cumplir estándares de seguridad y trazabilidad.}","Dado que un usuario administrador ingresa credenciales válidas
+Cuando se autentica correctamente y se genera un JWT
+Entonces el backend registra una entrada en audit_log con { userId, action: ""LOGIN_SUCCESS"", timestamp, ip, userAgent }","Dado que un administrador intenta autenticarse con credenciales incorrectas
+Cuando el backend detecta error de autenticación
+Entonces se registra en audit_log con { action: ""LOGIN_FAILED"", emailIntentado, timestamp, ip, motivo: ""Credenciales inválidas"" }","Dado que un administrador modifica manualmente el estado de un pedido en el panel de gestión
+Cuando se actualiza el estado mediante PATCH /api/pedidos/{id}
+Entonces se registra en audit_log con { userId, action: ""UPDATE_ORDER_STATUS"", orderId, oldStatus, newStatus, timestamp }","Dado que un administrador elimina la cuenta de un cliente o usuario
+Cuando se hace DELETE /api/users/{id}
+Entonces se inserta un registro en audit_log con { adminId, action: ""DELETE_USER"", targetUserId, timestamp }","Dado que un proveedor es eliminado desde el módulo correspondiente
+Cuando se ejecuta DELETE /api/proveedores/{id}
+Entonces el backend registra { adminId, action: ""DELETE_SUPPLIER"", supplierId, timestamp } en audit_log","Dado que un administrador cambia su propio nombre, correo o contraseña
+Cuando la UI envía PATCH /api/admins/{id}
+Entonces se registra en audit_log con { userId, action: ""UPDATE_PROFILE"", camposModificados, timestamp }","Dado que ocurre una acción crítica (como login o eliminación)
+Cuando el intento de inserción en audit_log falla (timeout, error de conexión, etc.)
+Entonces el backend almacena el evento en una cola de retry (audit_fallback_queue) y emite una alerta técnica audit:failed_log para revisión manual","Dado que un request malintencionado intenta suplantar datos en el log
+Cuando se recibe una petición con campos auditables forzados desde el frontend
+Entonces el backend ignora valores no autorizados y valida internamente la integridad del log antes de registrar",,,,3,Do 
+HU35,Rendimiento y Escalabilidad,Como propietario del negocio quiero que la plataforma soporte al menos 1 000 usuarios simultáneos con < 70 % de CPU en picos para garantizar escalabilidad en alta demanda.,"Dado que el entorno de staging está configurado para simular 1 000 conexiones simultáneas (HTTP/WebSocket)
+Cuando se ejecuta el script de prueba que mantiene activas todas las conexiones durante 10 minutos
+Entonces el monitor de recursos registra un uso de CPU promedio < 70 % en la instancia principal de la aplicación","Dado que la aplicación produce métricas de uso de CPU y número de conexiones
+Cuando el sistema de monitoreo (Prometheus, Datadog, etc.) recolecta datos cada 15 s
+Entonces las series platform_cpu_usage y active_connections se actualizan con etiquetas { instance, timestamp }","Dado que el uso de CPU supera el 70 % durante ≥ 2 minutos consecutivos con ≥ 1 000 conexiones
+Cuando el sistema de alertas detecta ese umbral excedido
+Entonces se dispara ALERT_PLATFORM_CPU_HIGH y se notifica al canal de DevOps con detalles del pico","Dado que la orquestación (Kubernetes, ECS, etc.) está habilitada para escalado automático
+Cuando el uso de CPU permanece ≥ 70 % y las conexiones activas ≥ 1 000 durante 3 minutos
+Entonces el orquestador lanza automáticamente nuevas réplicas hasta distribuir la carga","Dado que la plataforma alcanza + 1 200 conexiones antes del autoescalado efectivo
+Cuando un nuevo cliente intenta conectarse (HTTP o WebSocket)
+Entonces el servidor responde con HTTP 503 Service Unavailable o cierra la WS con código 1013 y mensaje “Servidor saturado, reintenta en unos segundos”","Dado que el servidor ha rechazado la conexión por saturación
+Cuando el cliente recibe 503 o cierre WS 1013
+Entonces muestra “Servicio temporalmente saturado. Intenta de nuevo en breve.” y reintenta conexión con backoff exponencial hasta 3 intentos","Dado que la plataforma escala (up/down) o rechaza conexiones
+When ocurre la acción
+Entonces se registra en scaling_events y connection_errors con { action:""scaleUp""|""scaleDown""|""rejectConnection"", replicasBefore, replicasAfter, timestamp, connectionCount }","Dado que ha transcurrido un mes calendario
+Cuando se ejecuta el job de reporte de concurrencia (GET /api/monitoring/concurrency-sla?month=MM&year=YYYY)
+Entonces se verifica que ≥ 95 % del tiempo mensual la plataforma soportó ≥ 1 000 conexiones con CPU < 70 %, y se genera el informe de cumplimiento","Dado que la plataforma no puede escalar más (límite de instancias alcanzado)
+Cuando la CPU supera el 70 % y las conexiones siguen aumentando
+Entonces el sistema aplica políticas de degradación (p. ej. deshabilitar funciones de baja prioridad) para mantener operativa la funcionalidad crítica y registra la acción en scaling_events",,,7,Do 
+HU36,Mantenibilidad y observabilidad,Como administrador quiero respaldos automáticos diarios con retención de 30 días en servidor externo para garantizar la recuperación de datos ante fallos.,"Dado que el servidor de base de datos está operativo
+Cuando el reloj del sistema alcanza las 02:00 AM cada día
+Entonces el orquestador del backup ejecuta el script runDailyBackup() que inicia la extracción completa de la base de datos","Dado que la copia de la base de datos se crea como backup-YYYYMMDD.sql en el almacenamiento local
+Cuando runDailyBackup() completa la escritura del archivo
+Entonces el sistema transfiere el archivo al servidor externo seguro mediante SFTP/HTTPS, validando checksum al destino","Dado que la transferencia al servidor externo concluye sin errores
+Cuando el script verifica la integridad del archivo con checksum
+Entonces inserta un registro en la tabla backup_logs con { filename, size, checksum, status:""SUCCESS"", timestamp }","Dado que la carpeta del servidor externo contiene archivos de respaldo de más de 30 días
+Cuando runDailyBackup() inicia la fase de limpieza
+Entonces itera los archivos y elimina aquellos con fecha anterior a 30 días, registrando cada eliminación en backup_logs con { filename, status:""DELETED"", timestamp }","Dado que el script de backup falla al exportar la base de datos (error de disco, permisos, etc.)
+Cuando ocurre una excepción durante runDailyBackup()
+Entonces el sistema registra { error, stage:""EXPORT"", timestamp } en backup_errors, envía un correo al administrador con detalles del fallo y reintenta la exportación tras 10 minutos, hasta 2 intentos","Dado que la creación local del backup fue exitosa
+Cuando la transferencia SFTP/HTTPS retorna error (timeout, autenticación, red)
+Entonces el sistema registra { error, stage:""TRANSFER"", filename, timestamp } en backup_errors, envía alerta al equipo de operaciones y reintenta la transferencia cada 5 minutos, hasta 3 intentos","Dado que el sistema mantiene respaldos diarios
+Cuando el administrador ejecuta POST /admin/backup/verify
+Entonces el sistema descarga el backup más reciente, lo restaura a una base de datos de prueba y comprueba la integridad (checksum y prueba de consultas básicas), luego reporta HTTP 200 y detalla el resultado de la verificación","Dado que el servidor externo rechaza la conexión o no está accesible
+Cuando los 3 intentos de transferencia fallan
+Entonces el sistema redirige la copia del backup a un servidor secundario de respaldo, registra la acción en backup_logs y notifica al administrador con prioridad alta",,,,3,Do 
+HU37,Gestión de pedidos ,"Como administrador quiero que el sistema actualice automáticamente el estado del pedido cuando se procese, envíe o entregue para reflejar información en tiempo real sin intervención manual.","Dado que he iniciado sesión como administrador con un JWT válido y estoy en la vista de “Pedidos” (/admin/pedidos)
+Cuando el componente monta y ejecuta socket = new WebSocket(""wss://api.juangel.com/orders/updates"")
+Entonces el cliente mantiene socket.readyState === 1 (OPEN) y está listo para recibir eventos","Dado que el pedido con orderId=123 está en estado “En Proceso” en la tabla y el WebSocket está conectado
+Cuando el servidor emite el mensaje {""event"":""order:processed"",""data"":{""orderId"":123}}
+Entonces el cliente actualiza la celda status de la fila 123 a “Procesado” en tiempo real sin recargar","Dado que el pedido 123 está en estado “Enviado” y el socket sigue abierto
+Cuando se recibe {""event"":""order:delivered"",""data"":{""orderId"":123}}
+Entonces el cliente cambia el estado a “Entregado” y marca la fila como finalizada (por ejemplo, con un estilo gris)","Dado que el pedido 123 ya figura como “Procesado” y la conexión WebSocket sigue activa
+Cuando llega el mensaje {""event"":""order:sent"",""data"":{""orderId"":123}}
+Entonces el cliente actualiza inmediatamente el campo status a “Enviado” y opcionalmente muestra un toast “Pedido 123 enviado”","Dado que el WebSocket recibe un mensaje con event no previsto (por ejemplo {""event"":""order:cancelled""})
+Cuando el cliente procesa el payload en el handler onmessage
+Entonces descarta el mensaje, registra logger.warn(""Evento no manejado"", event) y no altera ningún estado","Dado que el WebSocket emite onclose o onerror
+Cuando ocurre el fallo de conexión
+Entonces el cliente muestra “Conexión perdida. Reintentando…” y ejecuta socket.reconnect() con backoff exponencial hasta reconectar","Dado que la conexión WebSocket se restablece (onopen tras reconectar)
+Cuando el cliente recibe el evento sync o emite GET /api/orders/updates?since=timestamp
+Entonces la API devuelve los estados pendientes y el cliente aplica las actualizaciones para asegurar consistencia con el backend","Dado que al montar el componente el WebSocket no logra conectarse tras el timeout (p. ej. 5 s)
+Cuando socket.readyState permanece en CONNECTING más allá de 5 s
+Entonces el cliente muestra “No se pudo activar actualizaciones en tiempo real” y deshabilita la suscripción automática, recomendando recarga manual",,,,4,Do 
+HU38,Mantenibilidad y Observabilidad,Como desarrollador quiero al menos 80 % de cobertura de pruebas unitarias en backend y frontend para garantizar la calidad y reducir errores en producción.,"Dado que se invoca el comando de test en el pipeline CI (npm test y pytest)
+Cuando finalizan todas las pruebas unitarias en backend y frontend
+Entonces se generan reportes de cobertura en formato JSON/HTML ubicados en coverage/ y reports/coverage/","Dado que el pipeline CI recibe los reportes de cobertura
+Cuando se ejecuta la step de validación de cobertura (coverage threshold check)
+Entonces el job falla si cualquier porcentaje de cobertura (statements, branches, functions, lines) es < 80 % en backend o frontend, cancelando el merge","Dado que los reportes de cobertura se generan correctamente
+Cuando el pipeline CI publica artefactos
+Entonces las métricas de cobertura (global y por carpeta) quedan visibles en la interfaz de CI/CD bajo “Code Coverage”","Dado que cada ejecución exitosa de CI produce un reporte de cobertura
+Cuando los artefactos se cargan en el servidor de métricas (Codecov o SonarQube)
+Entonces se registra un histórico de cobertura para comparar tendencias mensuales y detectar degradaciones","Dado que un desarrollador corre npm run test:coverage o pytest --cov en su máquina
+Cuando finaliza la ejecución
+Entonces el script verifica que la cobertura local sea ≥ 80 % y advierte con exit code 1 si no se cumple","Dado que ocurre un fallo durante la generación de reportes de cobertura (por ejemplo, archivo malformado)
+Cuando el reporte no se crea o está corrupto
+Entonces el pipeline CI muestra error “Coverage report generation failed”, falla el step correspondiente y registra { job: ""coverage"", error } en ci_errors","Dado que el umbral de cobertura no se alcanza en CI
+Cuando el job de validación de cobertura falla
+Entonces se envía un correo automático al equipo de desarrollo con detalles de los módulos y porcentajes de cobertura obtenidos","Dado que se añaden nuevos archivos de código al repositorio
+Cuando se ejecuta el pipeline CI
+Entonces la validación de cobertura incluye estos archivos en el cálculo y no los excluye por configuración, garantizando que el 80 % aplica al conjunto completo de código","Dado que la imagen del contenedor CI no incluye las dependencias para reportes de cobertura
+Cuando las herramientas (istanbul, coverage.py) no están disponibles
+Entonces el pipeline falla con mensaje “Coverage tools not found”, indicando al equipo de DevOps reconfigurar el entorno de CI",,,7,Do 
+HU39,Gestión de pedidos,"Como administrador quiero ver y actualizar el estado de cada pedido (en proceso, terminado, enviado) y registrar pagos parciales o totales para llevar un control preciso.","Dado que he iniciado sesión como administrador con un JWT válido y navego a GET /admin/pedidos
+Cuando la UI ejecuta GET /api/orders
+Entonces la API responde HTTP 200 con un array de pedidos y el cliente renderiza una tabla con columnas orderId, date, status y total.","Dado que la tabla de pedidos está cargada y veo para el orderId=123 un <select id=""status-123""> con las opciones “En Proceso”, “Enviado”, “Entregado”
+Cuando selecciono “Enviado” en ese <select> y clico el botón “Actualizar estado” (PATCH /api/orders/123 con { status:""Enviado"" })
+Entonces la API retorna HTTP 200 y la celda de status se actualiza a “Enviado” sin recargar la página.","Dado que la fila de orderId=123 muestra un botón “Registrar pago”
+Cuando clico “Registrar pago”, completo el campo amount=50 en el modal y clico “Confirmar” (PUT /api/orders/123/payments con { amount:50 })
+Entonces la API responde HTTP 200, el modal se cierra y el historial de pagos bajo el pedido incluye la nueva entrada con monto, fecha y estado.","Dado que el pedido 123 tiene un balanceDue=100 y estoy en el mismo modal de pagos
+Cuando ingreso amount=100 y clico “Confirmar”
+Entonces la API devuelve HTTP 200, el balanceDue pasa a 0 y el pedido refleja estado de pago “Completado”.","Dado que existe un fallo interno al invocar GET /api/orders
+Cuando la API retorna HTTP 500
+Entonces la UI muestra un banner rojo “Error al cargar pedidos. Inténtalo más tarde.” y registra el error con logger.error.","Dado que intento actualizar status a un valor no permitido (por ejemplo ""Cancelado"")
+Cuando envío PATCH /api/orders/123 con { status:""Cancelado"" }
+Entonces la API retorna HTTP 400 con { error:""InvalidStatus"" } y la UI muestra “Estado no válido” junto al select.","Dado que el usuario selecciona un nuevo estado válido y clica “Actualizar estado”
+Cuando la API responde HTTP ≥ 500
+Entonces la UI muestra “Error al actualizar el estado. Inténtalo de nuevo.” y mantiene el valor anterior.","Dado que envío un amount válido y clica “Confirmar” en el modal de pagos
+Cuando la API retorna HTTP ≥ 500
+Entonces el modal permanece abierto, la UI muestra “Error al registrar el pago. Inténtalo de nuevo.” y no añade entrada al historial.","Dado que ejecuto cualquiera de las acciones anteriores (carga, actualización o pago)
+Cuando la petición excede el timeout configurado (p. ej. 10 s) o lanza excepción de red
+Entonces la UI muestra “No se pudo conectar. Verifica tu red e inténtalo más tarde.” y re-habilita los botones correspondientes para reintentar.",,,4,Do 
+HU40,Facturación y pago ,"Como administrador quiero generar automáticamente la factura electrónica al completarse un pedido y pago, y enviarla al cliente para asegurar cumplimiento normativo y eficiencia.","Dado que un pedido tiene estado “Pagado” y el backend recibe confirmación del pago completo vía pasarela (ej. Webhook)
+Cuando el backend valida el estado del pedido y confirma el monto pagado
+Entonces el sistema genera un documento XML con estructura de factura electrónica (según DIAN) y lo guarda en invoices/{orderId}.xml","Dado que el pedido ha sido pagado
+Cuando el backend va a generar la factura
+Entonces se valida que el cliente tenga nombre completo, documento de identidad y correo electrónico válidos; si falta algún dato, se bloquea la emisión","Dado que el sistema está por generar una nueva factura electrónica
+Cuando se invoca el servicio de numeración
+Entonces se asigna un número consecutivo único conforme al prefijo autorizado por la DIAN (ej. JML-000321)","Dado que la factura fue generada correctamente
+Cuando se completa la escritura del XML y el PDF de la factura
+Entonces el sistema envía un correo a user@example.com con asunto ""Factura electrónica de tu pedido #123"", adjuntando el PDF y XML","Dado que la DIAN exige reporte automático de facturación
+Cuando se genera la factura y está firmada digitalmente
+Entonces el sistema envía la factura a la DIAN a través del proveedor tecnológico autorizado y espera acuse de recibo","Dado que la factura ha sido enviada con éxito
+Cuando se confirma la entrega al cliente y a la DIAN
+Entonces se registra en la tabla invoice_log los datos del pedido, número de factura, fecha de generación, hash y estado de envío","Dado que el sistema intenta construir el XML de la factura
+Cuando ocurre un fallo en la serialización de datos (por campos mal formateados o faltantes)
+Entonces se guarda el error con orderId, se marca la factura como fallida, y se emite una alerta para revisión administrativa","Dado que la factura fue generada correctamente
+Cuando el envío por SMTP falla 3 veces consecutivas
+Entonces el sistema registra el error, reintenta con backoff exponencial, y si no se logra, genera una notificación al panel de administración","Dado que la factura ha sido enviada a la DIAN
+Cuando la respuesta del servicio indica error de validación (ej. NIT inválido, consecutivo rechazado)
+Entonces se marca la factura como “rechazada por DIAN”, se guarda el código de error y se notifica automáticamente al administrador",,,4,Do 
+HU41,Información y Catalogo,"Como cliente potencial quiero ver el catálogo de productos y servicios con imágenes, descripciones y precios para decidir qué adquirir fácilmente.","Dado que el usuario ha cargado correctamente la página principal (GET /) y ve el menú de navegación
+
+Cuando hace clic en el enlace “Catálogo” (evento onClick en el componente <NavLink to=""/catalogo"">)
+
+Entonces el cliente emite GET /api/products, muestra el spinner de carga (<Loader />) y cambia la URL a /catalogo.","Dado que la petición GET /api/products devuelve HTTP 200 con un array de productos con campos { id, imageUrl, description, price }
+
+Cuando la función renderCatalog(data) procesa el payload
+
+Entonces la UI crea un <ProductCard /> por cada elemento, mostrando la imagen (<img src={imageUrl}>), la descripción (<p>{description}</p>) y el precio (<span>{price}</span>).","Dado que la petición GET /api/products devuelve HTTP 200 con un array vacío ([]) 
+
+Cuando renderCatalog([]) se ejecuta
+
+Entonces en el contenedor #catalogContainer se renderiza el texto “No hay productos disponibles” dentro de un <EmptyState />.","Dado que la petición GET /api/products devuelve HTTP 5xx
+
+Cuando la llamada fetch('/api/products') rechaza o responde con código ≥ 500
+
+Entonces la UI muestra un banner de error “Error al cargar el catálogo, inténtalo de nuevo más tarde” y registra el error en consola (logger.error).",,,,,,,,1,Do 
+HU42,Información y Catalogo,"Como cliente quiero buscar y filtrar productos por nombre, categoría, precio y disponibilidad para encontrar exactamente lo que busco.","Dado que estoy en la página principal del sitio y he hecho clic en el botón “Catálogo” en la barra de navegación (evento onClick)
+
+Cuando el componente Catálogo se monta y ejecuta una llamada GET /api/products sin filtros
+
+Entonces recibo HTTP 200, y el cliente renderiza la lista completa de productos junto con el panel lateral de filtros visibles pero no aplicados.","Dado que tengo acceso al input de búsqueda de texto en el panel de filtros y veo el placeholder “Buscar por nombre”
+
+Cuando escribo un término de búsqueda y se ejecuta GET /api/products?name={query} Entonces la API retorna los productos que coinciden con el nombre y el cliente actualiza la vista con los resultados filtrados.","Dado que estoy en el catálogo y tengo habilitado el dropdown “Categoría” con opciones predefinidas
+
+Cuando selecciono una categoría y se ejecuta GET /api/products?category={value}Entonces la API responde con HTTP 200, y la UI muestra únicamente los productos de dicha categoría.","Dado que tengo habilitado el control deslizante de precio mínimo y máximo
+
+Cuando ajusto los valores y se dispara GET /api/products?minPrice={x}&maxPrice={y}
+
+Entonces el sistema devuelve solo los productos dentro del rango de precio especificado y actualiza el grid de productos.","Dado que tengo uno o más filtros activos y veo el botón “Borrar filtros” en el panel lateral
+
+Cuando hago clic en “Borrar filtros” (evento onClick)
+
+Entonces el cliente limpia todos los campos de filtros, ejecuta GET /api/products sin parámetros, y renderiza nuevamente todos los productos disponibles.",,,,,,,2,Do 
+HU43,Información y Catalogo,"Como administrador quiero subir, recortar y eliminar imágenes de productos para mantener un catálogo visual siempre actualizado.
+","
+Dado que he iniciado sesión como administrador con un JWT válido y navego a GET /admin/products/123/images   Cuando la UI realiza GET /api/products/123/images            Entonces recibo HTTP 200 con un array [{ imgId, url, metadata }] y el cliente renderiza una miniatura (<img src={url}>) para cada elemento.","Dado que estoy en la página de gestión de imágenes de producto (/admin/products/123/images) y veo el botón “Subir imagen”          Cuando selecciono un archivo de imagen válido en el diálogo de archivos y clico “Subir” (POST /api/products/123/images con form-data)      
+
+Entonces la API retorna HTTP 201 con { imgId, url }, y el cliente añade dinámicamente la nueva miniatura al listado sin recargar.","Dado que estoy viendo la miniatura de imgId=456 y clico el icono “Recortar” asociado (evento onClick)        
+
+Cuando ajusto el área de recorte en el componente <ImageCropper /> y clico “Guardar recorte” (PUT /api/products/123/images/456 con payload { x,y,width,height })     
+
+Entonces la API responde HTTP 200 y la miniatura se actualiza mostrando la versión recortada.","Dado que la miniatura de imgId=456 está visible en el listado y aparece el botón “Eliminar”      
+
+Cuando clico “Eliminar” y confirmo en el modal emergente (DELETE /api/products/123/images/456
+
+Entonces la API devuelve HTTP 204 y el cliente remueve la miniatura de imgId=456 de la vista sin recargar.","Dado que estoy en /admin/products/123/images y he seleccionado un archivo con extensión no soportada (por ejemplo .txt)     
+
+Cuando envío POST /api/products/123/images con ese archivo      
+
+Entonces la API responde HTTP 415 y la UI muestra el mensaje de error “Formato de archivo no válido. Use imágenes JPG o PNG.” bajo el input de archivo.","Dado que estoy en /admin/products/123/images y he seleccionado un archivo con extensión no soportada (por ejemplo .txt)     
+
+Cuando envío POST /api/products/123/images con ese archivo      
+
+Entonces la API responde HTTP 415 y la UI muestra el mensaje de error “Formato de archivo no válido. Use imágenes JPG o PNG.” bajo el input de archivo.","Dado que he seleccionado un archivo de imagen de 10 MB cuando el límite es 5 MB            Cuando envío POST /api/products/123/images con ese archivo
+
+Entonces la API responde HTTP 413 y la UI muestra “El tamaño del archivo supera el límite de 5 MB.” junto al input.","Dado que la miniatura imgId=456 está visible y configuro coordenadas de recorte fuera de los límites de la imagen     
+
+Cuando envío PUT /api/products/123/images/456 con { x:-10, y:0, width:5000, height:5000 } 
+
+Entonces la API responde HTTP 400 con { error: ""InvalidCropParameters"" } y la UI muestra “Parámetros de recorte inválidos.” dentro del componente de recorte.","Dado que intento eliminar imgId=999 que no existe Cuando envío DELETE /api/products/123/images/999 Entonces la API responde HTTP 404 con { error: ""ImageNotFound"" } y la UI muestra “Imagen no encontrada.” junto al listado.","Dado que se produce un error interno (5xx) en cualquier petición de gestión de imágenes
+
+Cuando la llamada a /api/products/123/images devuelve código ≥ 500    Entonces la UI muestra un toast o banner “Error al procesar la solicitud. Inténtalo de nuevo más tarde.” y registra el error en el log de cliente (logger.error).",,2,Do 
+HU44,Información y Catalogo,"Como visitante quiero consultar la historia, misión, visión y valores de Juangel Maniquíes y Reparaciones para generar confianza en la empresa.","Dado que el usuario está en la página principal GET / y ve el elemento de menú <NavLink to=""/nosotros"">Nosotros</NavLink>      
+
+Cuando hace clic en ese enlace (onClick en el componente <NavLink>)   
+
+Entonces el cliente emite GET /api/about, muestra el spinner <Loader /> y cambia la URL a /nosotros.","Dado que la petición GET /api/about devuelve HTTP 200 con el objeto { history, mission, vision, values }        
+
+Cuando la función renderAbout(data) procesa el payload   
+
+Entonces la UI renderiza cuatro secciones con encabezados <h2> (“Historia”, “Misión”, “Visión”, “Valores”) y sus respectivos párrafos con el contenido recibido.","Dado que la API GET /api/about responde HTTP 200 con un objeto que carece de alguna propiedad (por ejemplo, vision ausente)        
+
+Cuando renderAbout(data) detecta la propiedad faltante     Entonces la sección correspondiente muestra “Información no disponible” en lugar del contenido y registra un warning en consola (logger.warn).","Dado que la petición GET /api/about devuelve un error HTTP ≥ 500 o la llamada rechaza  
+
+Cuando el cliente captura la excepción en fetchAbout()      Entonces la UI muestra un banner rojo “Error al cargar la información, inténtalo más tarde” y escribe el error en el log de cliente (logger.error).","Dado que el usuario hace clic en “Nosotros” y la petición es GET /api/about         
+
+Cuando la API responde HTTP 404 
+
+Entonces la UI reemplaza el contenido por “Sección no encontrada” y ofrece un enlace “Volver al Inicio”.","Dado que el usuario está en /nosotros y el cliente ejecuta fetch('/api/about')           
+
+Cuando la petición lanza un error de red o excede el timeout configurado (p. ej. 10 s)            Entonces la UI muestra “Error de red. Por favor verifica tu conexión e inténtalo de nuevo.” con un botón “Reintentar”.",,,,,,2,Do 
+,,,,,,,,,,,,,,,
+Objetivo del proyecto ,,,,,,,,,,,,,,,
+"Desarrollar una plataforma de comercio electrónico funcional, segura y escalable, que permita a los usuarios visualizar un catálogo de productos, gestionar su cuenta y realizar compras de manera eficiente. El sistema debe ofrecer una experiencia de usuario fluida, incluir herramientas administrativas para la gestión de productos y pedidos, e integrar funcionalidades modernas como notificaciones, automatización de procesos, y soporte conversacional mediante chatbot, asegurando calidad, usabilidad y mantenibilidad en cada entrega incremental.",,,,,,,,,,,,,,,
