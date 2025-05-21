@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi cuenta – Juangel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans bg-gray-50 pt-16">
+  <!-- Navbar fija -->
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+    <div class="text-2xl font-bold text-blue-600">Juangel</div>
+    <div class="flex items-center space-x-6">
+      <ul class="flex space-x-6">
+        <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
+        <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+        <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+        <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
+      </ul>
+      <div class="relative">
+        <button id="userMenuBtn" class="focus:outline-none">
+          <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
+        </button>
+        <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+          <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
+          <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido: Mi Cuenta -->
+  <main id="mainContent" class="mt-20 mb-16 max-w-3xl mx-auto bg-white p-8 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-6">Mi cuenta</h2>
+    <form id="profileForm" class="space-y-6">
+      <!-- Foto (click para cambiar sólo en edición) -->
+      <div class="flex items-center space-x-6">
+        <label id="photoLabel" class="relative group pointer-events-none">
+          <img id="profilePic" src="../../media/images/juan_carlos.jpg" alt="Foto de perfil"
+               class="w-24 h-24 rounded-full object-cover border"/>
+          <div id="photoOverlay"
+               class="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+            <span class="text-white text-sm">Cambiar</span>
+          </div>
+          <input id="photoInput" type="file" accept="image/*"
+                 class="absolute inset-0 w-full h-full opacity-0 hidden"/>
+        </label>
+      </div>
+
+      <!-- Campos con placeholders y focus visible -->
+      <div>
+        <label for="name" class="block text-gray-700 font-medium mb-1">* Nombre completo</label>
+        <input id="name" type="text" placeholder="Juan Pérez" disabled
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+      </div>
+
+      <div>
+        <label for="email" class="block text-gray-700 font-medium mb-1">* Correo electrónico</label>
+        <input id="email" type="email" placeholder="usuario@ejemplo.com" disabled
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+      </div>
+
+      <div>
+        <label for="password" class="block text-gray-700 font-medium mb-1">* Contraseña</label>
+        <input id="password" type="password" placeholder="••••••••" disabled
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <label for="nit" class="block text-gray-700 font-medium mb-1">NIT</label>
+          <input id="nit" type="text" placeholder="123456789-0" disabled
+                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+        </div>
+        <div>
+          <label for="role" class="block text-gray-700 font-medium mb-1">Tipo de usuario</label>
+          <select id="role" disabled
+                  class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition bg-white">
+            <option>Cliente</option>
+            <option>Proveedor</option>
+            <option>Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <label for="birthDate" class="block text-gray-700 font-medium mb-1">Fecha de nacimiento</label>
+          <input id="birthDate" type="date" disabled
+                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+        </div>
+        <div>
+          <label for="address" class="block text-gray-700 font-medium mb-1">Dirección</label>
+          <input id="address" type="text" placeholder="Calle 123, Ciudad" disabled
+                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"/>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex space-x-4">
+        <button type="button" id="editProfileBtn"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Modificar
+        </button>
+        <button type="button" id="saveProfileBtn" disabled
+                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 hidden">
+          Guardar
+        </button>
+        <button type="button" id="cancelEditBtn"
+                class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 hidden">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Footer revisado -->
+  <footer class="bg-gray-800 text-gray-300 py-8">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Legal</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="hover:underline">Privacidad</a></li>
+          <li><a href="#" class="hover:underline">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Contacto</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-instagram.svg" alt="Instagram" class="w-4 h-4 mr-1"/>Instagram
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-facebook.svg" alt="Facebook" class="w-4 h-4 mr-1"/>Facebook
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-x.svg" alt="Twitter" class="w-4 h-4 mr-1"/>Twitter
+            </a>
+          </li>
+          <li>Tel: <a href="tel:+573166071162" class="hover:underline">+57 316 6071162</a></li>
+          <li>Email: <a href="mailto:contacto.fabricacionesjuangel@gmail.com" class="hover:underline">contacto.fabricacionesjuangel@gmail.com</a></li>
+          <li>Dirección: <a href="https://www.google.com/maps/place/Cl.+58+%23+54-10,+La+Candelaria,+Medell%C3%ADn" target="_blank" rel="noopener" class="hover:underline">Calle 58 #54-10, Medellín</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Accesos Rápidos</h3>
+        <ul class="space-y-1">
+          <li><a href="index.html" class="hover:underline">Inicio</a></li>
+          <li><a href="tienda.html" class="hover:underline">Tienda Virtual</a></li>
+          <li><a href="quienes-somos.html" class="hover:underline">Quiénes Somos</a></li>
+          <li><a href="contacto.html" class="hover:underline">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../model/userMenu.js" defer></script>
+  <script src="../model/mi-cuenta.js" defer></script>
+</body>
+</html>
