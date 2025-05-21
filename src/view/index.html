@@ -270,26 +270,66 @@
     WhatsApp
   </a>
 
-  <!-- Nuestros Servicios -->
-  <section class="py-16 bg-gray-100">
-    <div class="max-w-6xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Nuestros Servicios</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-lg shadow text-center">
-          <h3 class="text-xl font-semibold mb-2">Reparación</h3>
-          <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow text-center">
-          <h3 class="text-xl font-semibold mb-2">Elaboración de Maniquíes</h3>
-          <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow text-center">
-          <h3 class="text-xl font-semibold mb-2">Elaboración de Productos en Fibra de Vidrio</h3>
-          <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </div>
-      </div>
+  <!-- Chatbot overlay -->
+  <div id="chatOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+  <!-- Chatbot panel -->
+  <aside id="chatPanel" class="fixed bottom-0 right-0 w-full sm:w-96 h-3/4 bg-white shadow-lg transform translate-y-full transition-transform z-50 flex flex-col">
+    <div class="flex justify-between items-center p-4 border-b bg-gray-100">
+      <h3 class="text-lg font-semibold">Chatbot</h3>
+      <button id="chatClose" class="text-gray-600 hover:text-gray-800">&times;</button>
     </div>
-  </section>
+    <div class="p-4 overflow-y-auto flex-1">
+      <form id="chatbotForm" novalidate class="space-y-6 bg-gray-50 p-4 rounded-lg">
+        <div>
+          <label class="block text-gray-700 mb-1">Nombre completo</label>
+          <input id="chatName" type="text" placeholder="Ingresa tu nombre"
+                 class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"/>
+        </div>
+        <div>
+          <label class="block text-gray-700 mb-1">Correo electrónico</label>
+          <input id="chatEmail" type="text" placeholder="correo@ejemplo.com"
+                 class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"/>
+        </div>
+        <div class="space-y-3">
+          <label class="flex items-center space-x-2">
+            <input id="acceptTnC" type="checkbox"
+                   class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-200"/>
+            <span class="text-gray-800 text-sm">
+              Acepto 
+              <a href="terminos-y-condiciones.html" class="underline text-blue-600 hover:text-blue-800">
+                Términos y Condiciones
+              </a>
+            </span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input id="acceptPrivacy" type="checkbox"
+                   class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-200"/>
+            <span class="text-gray-800 text-sm">
+              He leído el 
+              <a href="privacidad.html" class="underline text-blue-600 hover:text-blue-800">
+                Aviso de Privacidad
+              </a>
+            </span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input id="acceptData" type="checkbox"
+                   class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-200"/>
+            <span class="text-gray-800 text-sm">
+              Acepto el 
+              <a href="tratamiento-datos.html" class="underline text-blue-600 hover:text-blue-800">
+                Tratamiento de Datos
+              </a>
+            </span>
+          </label>
+        </div>
+        <button type="submit"
+                class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 focus:outline-none">
+          Iniciar Chat
+        </button>
+      </form>
+    </div>
+  </aside>
 
   <!-- Footer revisado -->
   <footer class="bg-gray-800 text-gray-300 py-8">
@@ -358,6 +398,7 @@
 
   <!-- cargar scripts -->
   <script src="../model/userMenu.js" defer></script>
+  <script src="../model/chatbot.js" defer></script>
   <script src="../model/home.js" defer></script>
 
 </body>

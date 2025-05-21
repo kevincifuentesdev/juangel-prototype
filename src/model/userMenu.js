@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ? `
         <a href="mi-cuenta.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Mi Perfil</a>
         <a href="mis-pedidos.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Mis Pedidos</a>
-        <a href="admin/dashboard.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
         <div class="border-t my-1"></div>
         <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Cerrar sesión</button>
       `
