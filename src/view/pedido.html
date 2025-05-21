@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle de Pedido – Juangel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans bg-gray-50 pt-16">
+  <!-- Navbar fija -->
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+    <div class="text-2xl font-bold text-blue-600">Juangel</div>
+    <div class="flex items-center space-x-6">
+      <ul class="flex space-x-6">
+        <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
+        <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+        <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+        <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
+      </ul>
+      <div class="relative">
+        <button id="userMenuBtn" class="focus:outline-none">
+          <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
+        </button>
+        <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+          <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
+          <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="mt-20 mb-16 max-w-6xl mx-auto px-4 space-y-8">
+    <!-- Cabecera de pedido -->
+    <section class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-bold mb-4">Pedido #12345</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+        <p><span class="font-semibold">Fecha de pedido:</span> 2024-06-10</p>
+        <p><span class="font-semibold">Fecha estimada de entrega:</span> 2024-06-15</p>
+        <p><span class="font-semibold">Agencia de reparto:</span> EnvíaExpress</p>
+        <p><span class="font-semibold">Medio de pago:</span> Tarjeta de crédito</p>
+        <p><span class="font-semibold">Estado del pedido:</span> Enviado</p>
+      </div>
+    </section>
+
+    <!-- Lista de productos -->
+    <section class="bg-white p-6 rounded-lg shadow space-y-4">
+      <h3 class="text-xl font-semibold mb-4">Productos comprados</h3>
+      <div class="space-y-4">
+        <div class="flex items-center bg-gray-50 p-4 rounded border">
+          <img src="../../media/images/product_image.jpg" alt="Producto 1" class="w-16 h-16 object-cover rounded"/>
+          <div class="flex-1 ml-4">
+            <p class="font-medium">Producto 1</p>
+            <p class="text-sm text-gray-600">Cantidad: 2</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-gray-600">Unitario: $50,000</p>
+            <p class="font-semibold">$100,000</p>
+          </div>
+        </div>
+        <div class="flex items-center bg-gray-50 p-4 rounded border">
+          <img src="../../media/images/product_image.jpg" alt="Producto 2" class="w-16 h-16 object-cover rounded"/>
+          <div class="flex-1 ml-4">
+            <p class="font-medium">Producto 2</p>
+            <p class="text-sm text-gray-600">Cantidad: 1</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-gray-600">Unitario: $60,000</p>
+            <p class="font-semibold">$60,000</p>
+          </div>
+        </div>
+        <!-- ...más productos si los hay... -->
+      </div>
+    </section>
+
+    <!-- Totales -->
+    <section class="bg-white p-6 rounded-lg shadow max-w-md ml-auto">
+      <div class="space-y-2 text-gray-700">
+        <div class="flex justify-between">
+          <span>Subtotal:</span><span>$160,000</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-semibold">Total del pedido:</span><span class="font-semibold">$160,000</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acciones -->
+    <div class="flex space-x-4 justify-end">
+      <button
+        class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Descargar factura
+      </button>
+      <a
+        href="mis-pedidos.html"
+        class="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+      >
+        Volver
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer revisado -->
+  <footer class="bg-gray-800 text-gray-300 py-8">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Legal</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="hover:underline">Privacidad</a></li>
+          <li><a href="#" class="hover:underline">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Contacto</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-instagram.svg" alt="Instagram" class="w-4 h-4 mr-1"/>Instagram
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-facebook.svg" alt="Facebook" class="w-4 h-4 mr-1"/>Facebook
+            </a>
+          </li>
+          <li>
+            <a href="#" class="inline-flex items-center hover:underline">
+              <img src="../../media/icons/icons8-x.svg" alt="Twitter" class="w-4 h-4 mr-1"/>Twitter
+            </a>
+          </li>
+          <li>Tel: <a href="tel:+573166071162" class="hover:underline">+57 316 6071162</a></li>
+          <li>Email: <a href="mailto:contacto.fabricacionesjuangel@gmail.com" class="hover:underline">contacto.fabricacionesjuangel@gmail.com</a></li>
+          <li>Dirección: <a href="https://www.google.com/maps/place/Cl.+58+%23+54-10,+La+Candelaria,+Medell%C3%ADn" target="_blank" rel="noopener" class="hover:underline">Calle 58 #54-10, Medellín</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2 text-white">Accesos Rápidos</h3>
+        <ul class="space-y-1">
+          <li><a href="index.html" class="hover:underline">Inicio</a></li>
+          <li><a href="tienda.html" class="hover:underline">Tienda Virtual</a></li>
+          <li><a href="quienes-somos.html" class="hover:underline">Quiénes Somos</a></li>
+          <li><a href="contacto.html" class="hover:underline">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../model/userMenu.js" defer></script>
+</body>
+</html>
