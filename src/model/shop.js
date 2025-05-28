@@ -34,12 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function render(productsToRender) {
     listEl.innerHTML = '';
-    productsToRender.forEach(p => {
+    productsToRender.forEach((p, idx) => {
       const card = document.createElement('div');
       card.className = 'bg-white p-4 rounded-lg shadow text-center border transition transform hover:shadow-lg hover:scale-105';
+      const imgSrc = idx % 2 === 0
+        ? '../../media/images/product_image_1.jpg'
+        : '../../media/images/product_image.jpg';
       card.innerHTML = `
         <a href="producto.html?product=${p.id}">
-          <img src="../../media/images/product_image.jpg" alt="${p.title}"
+          <img src="${imgSrc}" alt="${p.title}"
                class="w-full h-40 object-cover mb-4 rounded transition-opacity hover:opacity-90"/>
         </a>
         <h3 class="font-semibold mb-1">${p.title}</h3>

@@ -8,9 +8,10 @@
 </head>
 <body class="font-sans bg-gray-50 pt-16">
   <!-- Navbar fija -->
-  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-4 md:px-8 py-4 flex justify-between items-center z-50">
     <div class="text-2xl font-bold text-blue-600">Juangel</div>
-    <div class="flex items-center space-x-6">
+    <button id="mobileMenuBtn" class="md:hidden text-gray-700 focus:outline-none">☰</button>
+    <div class="hidden md:flex items-center space-x-6">
       <ul class="flex space-x-6">
         <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
         <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
@@ -28,6 +29,22 @@
       </div>
     </div>
   </nav>
+
+  <!-- Menú lateral móvil -->
+  <aside id="mobileMenu"
+         class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full transition-transform z-50 md:hidden">
+    <div class="flex justify-between items-center px-4 py-4 border-b">
+      <h3 class="text-lg font-semibold">Menú</h3>
+      <button id="mobileMenuClose" class="text-gray-700 focus:outline-none">&times;</button>
+    </div>
+    <ul id="mobileMenuList" class="px-4 py-6 space-y-4">
+      <li><a href="index.html" class="block text-gray-700 hover:text-blue-600">Inicio</a></li>
+      <li><a href="tienda.html" class="block text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+      <li><a href="mi-cuenta.html" class="block text-gray-700 hover:text-blue-600">Mi Perfil</a></li>
+      <li><a href="mis-pedidos.html" class="block text-gray-700 hover:text-blue-600">Mis Pedidos</a></li>
+      <li><a href="contacto.html" class="block text-gray-700 hover:text-blue-600">Contacto</a></li>
+    </ul>
+  </aside>
 
   <!-- Contenido: Mi Cuenta -->
   <main id="mainContent" class="mt-20 mb-16 max-w-3xl mx-auto bg-white p-8 rounded-lg shadow">
@@ -160,6 +177,7 @@
   </footer>
 
   <script src="../model/userMenu.js" defer></script>
+  <script src="../model/home.js" defer></script>
   <script src="../model/mi-cuenta.js" defer></script>
 </body>
 </html>

@@ -8,16 +8,17 @@
 </head>
 <body class="font-sans bg-gray-50 pt-16">
   <!-- Navbar fija -->
-  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-4 md:px-8 py-4 flex justify-between items-center z-50">
     <div class="text-2xl font-bold text-blue-600">Juangel</div>
     <div class="flex items-center space-x-6">
-      <ul class="flex space-x-6">
+      <button id="mobileMenuBtn" class="md:hidden text-gray-700 focus:outline-none">☰</button>
+      <ul class="hidden md:flex space-x-6">
         <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
         <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
         <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
         <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
       </ul>
-      <div class="relative">
+      <div class="hidden md:block relative">
         <button id="userMenuBtn" class="focus:outline-none">
           <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
         </button>
@@ -28,6 +29,28 @@
       </div>
     </div>
   </nav>
+
+  <aside id="mobileMenu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full transition-transform z-50 md:hidden">
+    <!-- Contenido del menú móvil -->
+    <div class="p-4">
+      <div class="flex justify-between items-center mb-4">
+        <div class="text-2xl font-bold text-blue-600">Juangel</div>
+        <button id="closeMobileMenu" class="text-gray-700">
+          &times;
+        </button>
+      </div>
+      <ul class="space-y-2">
+        <li><a href="index.html" class="block text-gray-700 hover:text-blue-600">Inicio</a></li>
+        <li><a href="tienda.html" class="block text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+        <li><a href="quienes-somos.html" class="block text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+        <li><a href="contacto.html" class="block text-gray-700 hover:text-blue-600">Contacto</a></li>
+      </ul>
+      <div class="mt-4">
+        <a href="login.html" class="block px-4 py-2 text-center text-gray-700 bg-gray-100 rounded hover:bg-gray-200">Iniciar Sesión</a>
+        <a href="sigin.html" class="block px-4 py-2 text-center text-gray-700 bg-gray-100 rounded hover:bg-gray-200">Registrarse</a>
+      </div>
+    </div>
+  </aside>
 
   <!-- Contenido principal -->
   <main class="mt-20 mb-16 max-w-6xl mx-auto px-4 space-y-8">
@@ -147,5 +170,6 @@
   </footer>
 
   <script src="../model/userMenu.js" defer></script>
+  <script src="../model/home.js" defer></script>
 </body>
 </html>

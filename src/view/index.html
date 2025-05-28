@@ -9,26 +9,46 @@
 <body class="font-sans bg-gray-50 pt-16">
 
   <!-- Navbar fija -->
-  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-8 py-4 flex justify-between items-center z-50">
+  <nav class="fixed top-0 left-0 w-full bg-white shadow-md px-4 md:px-8 py-4 flex justify-between items-center z-50">
     <div class="text-2xl font-bold text-blue-600">Juangel</div>
-    <div class="flex items-center space-x-6">
-      <ul class="flex space-x-6">
-        <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
-        <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
-        <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
-        <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
-      </ul>
-      <div class="relative">
-        <button id="userMenuBtn" class="focus:outline-none">
-          <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
-        </button>
-        <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
-          <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
-          <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
-        </div>
+    <!-- botón hamburguesa solo móvil -->
+    <button id="mobileMenuBtn" class="md:hidden text-gray-700 focus:outline-none">
+      &#9776;
+    </button>
+    <!-- enlaces menú desktop -->
+    <ul class="hidden md:flex space-x-6">
+      <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Inicio</a></li>
+      <li><a href="tienda.html" class="text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+      <li><a href="quienes-somos.html" class="text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+      <li><a href="contacto.html" class="text-gray-700 hover:text-blue-600">Contacto</a></li>
+    </ul>
+    <div class="hidden md:block relative">
+      <button id="userMenuBtn" class="focus:outline-none">
+        <img src="../../media/icons/person-fill-24.svg" alt="Usuario" class="w-6 h-6"/>
+      </button>
+      <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+        <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Iniciar Sesión</a>
+        <a href="sigin.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Registrarse</a>
       </div>
     </div>
   </nav>
+
+  <!-- Menú lateral móvil -->
+  <aside id="mobileMenu"
+         class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full transition-transform z-50 md:hidden">
+    <div class="flex justify-between items-center px-4 py-4 border-b">
+      <h3 class="text-lg font-semibold">Menú</h3>
+      <button id="mobileMenuClose" class="text-gray-700 focus:outline-none">&times;</button>
+    </div>
+    <ul class="px-4 py-6 space-y-4">
+      <li><a href="index.html" class="block text-gray-700 hover:text-blue-600">Inicio</a></li>
+      <li><a href="tienda.html" class="block text-gray-700 hover:text-blue-600">Tienda Virtual</a></li>
+      <li><a href="quienes-somos.html" class="block text-gray-700 hover:text-blue-600">Quiénes Somos</a></li>
+      <li><a href="contacto.html" class="block text-gray-700 hover:text-blue-600">Contacto</a></li>
+      <li><a href="login.html" class="block text-gray-700 hover:text-blue-600">Iniciar Sesión</a></li>
+      <li><a href="sigin.html" class="block text-gray-700 hover:text-blue-600">Registrarse</a></li>
+    </ul>
+  </aside>
 
   <!-- Banner -->
   <section
@@ -80,12 +100,12 @@
         <button id="carouselPrev" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full shadow">‹</button>
         <div id="productCarousel" class="overflow-hidden">
           <div class="flex transition-transform duration-300" data-carousel>
-            <!-- Ejemplo tarjeta genérica -->
+            <!-- Producto 1 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=1">
                   <img 
-                    src="../../media/images/product_image.jpg" 
+                    src="../../media/images/product_image_1.jpg" 
                     alt="Producto 1" 
                     class="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -98,7 +118,7 @@
                 </button>
               </div>
             </div>
-            <!-- Repetir para Productos 2–10 cambiando product=2, product=3, etc. -->
+            <!-- Producto 2 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=2">
@@ -116,11 +136,12 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 3 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=3">
                   <img 
-                    src="../../media/images/product_image.jpg" 
+                    src="../../media/images/product_image_1.jpg" 
                     alt="Producto 3" 
                     class="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -133,6 +154,7 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 4 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=4">
@@ -150,11 +172,12 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 5 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=5">
                   <img 
-                    src="../../media/images/product_image.jpg" 
+                    src="../../media/images/product_image_1.jpg" 
                     alt="Producto 5" 
                     class="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -167,6 +190,7 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 6 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=6">
@@ -184,11 +208,12 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 7 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=7">
                   <img 
-                    src="../../media/images/product_image.jpg" 
+                    src="../../media/images/product_image_1.jpg" 
                     alt="Producto 7" 
                     class="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -201,6 +226,7 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 8 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=8">
@@ -218,11 +244,12 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 9 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=9">
                   <img 
-                    src="../../media/images/product_image.jpg" 
+                    src="../../media/images/product_image_1.jpg" 
                     alt="Producto 9" 
                     class="w-full h-40 object-cover rounded-md mb-4"
                   />
@@ -235,6 +262,7 @@
                 </button>
               </div>
             </div>
+            <!-- Producto 10 -->
             <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
               <div class="bg-gray-50 p-6 rounded-lg shadow text-center border-2 border-blue-600">
                 <a href="producto.html?product=10">
